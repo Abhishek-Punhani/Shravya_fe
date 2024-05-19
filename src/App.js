@@ -1,8 +1,12 @@
+import {BrowserRouter as Router,Routes,Route} from "react-router-dom"
+
 function App() {
   return (
-    <>
-    <h1 className='text-red-500 font-thin'>Hello</h1>
-    </>
+    <Router>
+      <Routes>
+        <Route exact path="/" element ={Home} /> 
+      </Routes>
+    </Router>
   );
 }
 
