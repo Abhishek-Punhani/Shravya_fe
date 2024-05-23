@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import { useSelector } from "react-redux";
 function App() {
+  const { user } = useSelector((state) => ({ ...state }));
   return (
     <div className="dark">
       <Router>
