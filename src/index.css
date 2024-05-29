@@ -25,6 +25,10 @@
   .input {
     @apply w-full dark:bg-dark_bg_2 p-1.5 flex-1 rounded-lg outline-none
   }
+  .convos{
+    height: calc(100vh-220px);
+    overflow-y: auto;
+  }
 }
 
 
@@ -37,4 +41,21 @@
   0% {
     transform:rotate(-90deg)
   }
+}
+
+
+/* Custom Scrollbar */
+
+/* Width */
+.scrollbar::-webkit-scrollbar{
+  width: 5px;
+}
+
+/* track */
+.scrollbar::-webkit-scrollbar-track{
+  background: transparent;
+}
+/* thumb */
+.scrollbar::-webkit-scrollbar-thumb{
+  background: #444e54;
 }
