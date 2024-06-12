@@ -1,4 +1,4 @@
 import Searchbar from "./Searchbar";
+import SearchResults from "./SearchResults";
 
-
-export  {Searchbar};
+export { Searchbar, SearchResults };

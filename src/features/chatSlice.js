@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { act } from "react";
+
 const CONVERSATION_ENDPOINT=`${process.env.REACT_APP_AUTH_ENDPOINT}/conversation`;
 const initialState={
     status:"",
@@ -16,10 +16,12 @@ export const getConversations=createAsyncThunk("conversation/all",async (token,{
     try {
         const {data}=await axios.get(CONVERSATION_ENDPOINT,{
             headers:{
-                Authorization:`Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             }
         })
+        console.log(data);
     } catch (error) {
+        console.log(error);
         return rejectWithValue(error.response.data.error.message)
     }
 })
@@ -49,5 +51,5 @@ export const chatSlice=createSlice({
 })
 
 
-export const {}=chatSlice.actions;
+export const {setActiveConversation}=chatSlice.actions;
 export default chatSlice.reducer;

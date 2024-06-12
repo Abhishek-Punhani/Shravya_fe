@@ -15,7 +15,8 @@ const initalState={
 };
 export const registerUser=createAsyncThunk('auth/register',async(values,{rejectWithValue})=>{
     try {
-    const {data}=await axios.post(`${AUTH_ENDPOINT}/register`,{...values}); 
+    const {data}=await axios.post(`${AUTH_ENDPOINT}/register`,{...values});
+    console.log(data); 
     return data;
     } catch (error) {
         return rejectWithValue(error.response.data.error.message);
@@ -24,6 +25,7 @@ export const registerUser=createAsyncThunk('auth/register',async(values,{rejectW
 export const loginUser=createAsyncThunk('auth/login',async(values,{rejectWithValue})=>{
     try {
     const {data}=await axios.post(`${AUTH_ENDPOINT}/login`,{...values}); 
+    console.log(data);
     return data;
     } catch (error) {
         return rejectWithValue(error.response.data.error.message);
