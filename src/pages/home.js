@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/sidebar";
 import { useEffect } from "react";
 import { getConversations } from "../features/chatSlice";
-import { WelcomeHome } from "../components/chat";
+import { ChatContainer, WelcomeHome } from "../components/chat";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ export default function Home() {
         {/* Sidebar */}
         <Sidebar />
         {/* Main Chat Component */}
-        {activeConversation._id ? "Home" : <WelcomeHome />}
+        {activeConversation?._id ? <ChatContainer /> : <WelcomeHome />}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ function Conversations() {
       <ul>
         {conversations &&
           conversations.map((convo) => {
-            <Conversation convo={convo} key={convo._id} />;
+            return <Conversation convo={convo} key={convo._id} />;
           })}
       </ul>
     </div>

@@ -30,6 +30,15 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+  .overflow_scrollbar {
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .text-xxs {
+    font-size: 0.7rem;
+    line-height: 0.8rem;
+  }
 }
 
 /* Animations */

@@ -1,3 +1,3 @@
 import WelcomeHome from "./Welcome/WelcomeHome";
-
-export { WelcomeHome };
+import ChatContainer from "./ChatContainer";
+export { WelcomeHome, ChatContainer };

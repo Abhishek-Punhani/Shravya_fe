@@ -17,7 +17,7 @@ function Sidebar() {
         searchLength={searchResults.length}
         setSearchResults={setSearchResults}
       />
-      {console.log("search:", searchResults)}
+
       {searchResults.length > 0 ? (
         <>
           {/* Search Results */}
