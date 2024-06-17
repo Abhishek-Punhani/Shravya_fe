@@ -8,7 +8,10 @@ function Searchbar({ searchLength, setSearchResults }) {
   const { token } = user;
   const [show, setShow] = useState(false);
   const handleSearch = async (e) => {
-    if (e.target.value && e.key === "Enter") {
+    if (e.target.value === "") {
+      setSearchResults([]);
+    }
+    if (e.target.value) {
       try {
         const { data } = await axios.get(
           `${process.env.REACT_APP_AUTH_ENDPOINT}/user/?search=${e.target.value}`,
@@ -49,7 +52,7 @@ function Searchbar({ searchLength, setSearchResults }) {
               className="input"
               onFocus={() => setShow(true)}
               onBlur={() => searchLength === 0 && setShow(false)}
-              onKeyDown={(e) => handleSearch(e)}
+              onChange={(e) => handleSearch(e)}
             />{" "}
             {/* Set blur when click outside when onFocus-- when input box is active  // onKeyDown- ie when we add any input into the input box*/}
           </div>

@@ -1,4 +1,4 @@
-function Input({ msg, setMsg }) {
+function Input({ msg, setMsg, textRef }) {
   const onChangeHandler = (e) => {
     setMsg(e.target.value);
   };
@@ -10,6 +10,7 @@ function Input({ msg, setMsg }) {
         placeholder="type your message"
         onChange={(e) => onChangeHandler(e)}
         value={msg}
+        ref={textRef}
       />
     </div>
   );

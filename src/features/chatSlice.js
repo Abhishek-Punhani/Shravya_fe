@@ -20,6 +20,7 @@ export const getConversations = createAsyncThunk(
   "conversation/all",
   async (token, { rejectWithValue }) => {
     try {
+      console.log(token);
       const { data } = await axios.get(CONVERSATION_ENDPOINT, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -147,6 +148,12 @@ export const chatSlice = createSlice({
       .addCase(sendMessages.fulfilled, (state, action) => {
         state.status = "suceeded";
         state.messages = [...state.messages, action.payload];
+        let conversation = { ...action.payload, latestMessage: action.payload };
+        let newConvos = [...state.conversations].filter(
+          (c) => c._id !== conversation._id
+        );
+        newConvos.unshift(conversation);
+        state.conversations = newConvos;
         state.error = "";
       })
       .addCase(sendMessages.rejected, (state, action) => {

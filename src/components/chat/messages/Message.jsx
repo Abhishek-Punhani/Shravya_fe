@@ -1,7 +1,6 @@
 import moment from "moment";
 import TraingleIcon from "../../../svg/triangle";
 function Message({ message, me }) {
-  console.log(me);
   return (
     <>
       <div

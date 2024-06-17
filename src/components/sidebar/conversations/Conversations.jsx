@@ -1,15 +1,21 @@
 import { useSelector } from "react-redux";
 import Conversation from "./Conversation";
+import { useEffect } from "react";
 
 function Conversations() {
-  const { conversations } = useSelector((state) => state.chat);
+  const { conversations, activeConversation } = useSelector(
+    (state) => state.chat
+  );
+  useEffect(() => {}, [activeConversation]);
   return (
     <div className="convos scrollbar">
       <ul>
         {conversations &&
-          conversations.map((convo) => {
-            return <Conversation convo={convo} key={convo._id} />;
-          })}
+          conversations
+            .filter((c) => c.latestMessage || c._id === activeConversation._id)
+            .map((convo) => {
+              return <Conversation convo={convo} key={convo._id} />;
+            })}
       </ul>
     </div>
   );
