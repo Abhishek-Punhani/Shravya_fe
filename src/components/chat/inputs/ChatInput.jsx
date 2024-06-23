@@ -7,11 +7,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendMessages } from "../../../features/chatSlice";
 import { ClipLoader } from "react-spinners";
 import { useRef } from "react";
+import SocketContext from "../../../contexts/SocketContext";
 function ChatInput({
   showAttachments,
   showPicker,
   setShowAttachments,
   setShowPicker,
+  socket,
 }) {
   const dispacth = useDispatch();
   const [msg, setMsg] = useState("");
@@ -29,9 +31,12 @@ function ChatInput({
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await dispacth(sendMessages(values));
+    let newMsg = await dispacth(sendMessages(values));
+    socket.emit("new_message", newMsg.payload);
     setLoading(false);
     setMsg("");
+    setShowPicker(false);
+    setShowPicker(false);
   };
 
   return (
@@ -74,4 +79,10 @@ function ChatInput({
   );
 }
 
-export default ChatInput;
+const ChatInputWithSocket = (props) => (
+  <SocketContext.Consumer>
+    {(socket) => <ChatInput {...props} socket={socket} />}
+  </SocketContext.Consumer>
+);
+
+export default ChatInputWithSocket;
