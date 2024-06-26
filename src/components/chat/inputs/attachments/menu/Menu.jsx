@@ -2,10 +2,11 @@ import {
   CameraIcon,
   ContactIcon,
   DocumentIcon,
-  PhotoIcon,
   PollIcon,
   StickerIcon,
-} from "../../../../svg";
+} from "../../../../../svg";
+import DocumentAttachment from "./documentAttachment";
+import PhotoAttachment from "./photoAttachment";
 
 function Menu() {
   return (
@@ -21,11 +22,7 @@ function Menu() {
             <ContactIcon />
           </button>
         </li>
-        <li>
-          <button type="button" className="btn bg-[#5f66CD] mb-2">
-            <DocumentIcon />
-          </button>
-        </li>
+        <DocumentAttachment />
         <li>
           <button type="button" className="btn bg-[#D3396D] mb-2">
             <CameraIcon />
@@ -36,11 +33,7 @@ function Menu() {
             <StickerIcon />
           </button>
         </li>
-        <li>
-          <button type="button" className="btn bg-[#BF59CF] mb-4">
-            <PhotoIcon />
-          </button>
-        </li>
+        <PhotoAttachment />
       </ul>
     </>
   );

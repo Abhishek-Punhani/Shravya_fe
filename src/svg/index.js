@@ -25,8 +25,11 @@ import LockIcon from "./Lock";
 import CallIcon from "./Call";
 import MuteIcon from "./Mute";
 import NoVideoIcon from "./NoVideo";
+import TrashIcon from "./TrashIcon";
+import DownloadIcon from "./DownloadIcon";
 export {
   CommunityIcon,
+  DownloadIcon,
   StoryIcon,
   ChatIcon,
   NotificationIcon,
@@ -53,4 +56,5 @@ export {
   CallIcon,
   MuteIcon,
   NoVideoIcon,
+  TrashIcon,
 };

@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { getCoversationMessages } from "../../features/chatSlice";
 import { ChatInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
+import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 
 function ChatContainer({ onlineUsers, typing }) {
   const dispatch = useDispatch();
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { activeConversation, files } = useSelector((state) => state.chat);
 
   const { user } = useSelector((state) => state.user);
   const { token } = user;
@@ -30,15 +31,25 @@ function ChatContainer({ onlineUsers, typing }) {
         <ChatHeader
           online={checkOnline(onlineUsers, user, activeConversation.users)}
         />
-        {/* Chat Messages */}
-        <ChatMessages typing={typing} />
-        {/* Chat Inputs */}
-        <ChatInput
-          showPicker={showPicker}
-          setShowPicker={setShowPicker}
-          showAttachments={showAttachments}
-          setShowAttachments={setShowAttachments}
-        />
+
+        {files.length > 0 ? (
+          <>
+            {/* Files preview*/}
+            <FilesPreview />
+          </>
+        ) : (
+          <>
+            {/* Chat Messages */}
+            <ChatMessages typing={typing} />
+            {/* Chat Inputs */}
+            <ChatInput
+              showPicker={showPicker}
+              setShowPicker={setShowPicker}
+              showAttachments={showAttachments}
+              setShowAttachments={setShowAttachments}
+            />
+          </>
+        )}
       </div>
     </>
   );

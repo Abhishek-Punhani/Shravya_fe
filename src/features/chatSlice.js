@@ -119,6 +119,19 @@ export const chatSlice = createSlice({
       newConvos.unshift(conversation);
       state.conversations = newConvos;
     },
+    addFiles: (state, action) => {
+      state.files = [...state.files, action.payload];
+    },
+    clearFiles: (state, action) => {
+      state.files = [];
+    },
+    removeFile: (state, action) => {
+      let index = action.payload;
+      let files = [...state.files];
+      let fileToRemove = files[index];
+      files = files.filter((file) => file !== fileToRemove);
+      state.files = [...files];
+    },
   },
   extraReducers(builder) {
     builder
@@ -141,6 +154,7 @@ export const chatSlice = createSlice({
         state.status = "suceeded";
         state.activeConversation = action.payload;
         state.error = "";
+        state.files = [];
       })
       .addCase(create_open_conversation.rejected, (state, action) => {
         state.status = "failed";
@@ -173,6 +187,7 @@ export const chatSlice = createSlice({
         );
         newConvos.unshift(conversation);
         state.conversations = newConvos;
+        state.files = [];
         state.error = "";
       })
       .addCase(sendMessages.rejected, (state, action) => {
@@ -182,5 +197,11 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveConversation, updateMessages } = chatSlice.actions;
+export const {
+  setActiveConversation,
+  updateMessages,
+  addFiles,
+  clearFiles,
+  removeFile,
+} = chatSlice.actions;
 export default chatSlice.reducer;
