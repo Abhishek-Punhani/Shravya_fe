@@ -54,7 +54,7 @@ function DocumentAttachment() {
         className="bg-[#5F66CD] btn mb-4"
         onClick={() => inputRef.current.click()}
       >
-        <DocumentIcon />
+        <DocumentIcon size={53} />
       </button>
       <input
         type="file"

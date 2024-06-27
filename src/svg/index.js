@@ -27,7 +27,11 @@ import MuteIcon from "./Mute";
 import NoVideoIcon from "./NoVideo";
 import TrashIcon from "./TrashIcon";
 import DownloadIcon from "./DownloadIcon";
+import ValidIcon from "./valid";
+import EditIcon from "./edit";
 export {
+  EditIcon,
+  ValidIcon,
   CommunityIcon,
   DownloadIcon,
   StoryIcon,

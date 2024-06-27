@@ -1,11 +1,10 @@
-export default function DocumentIcon() {
+export default function DocumentIcon({ size }) {
   return (
     <svg
       viewBox="0 0 53 53"
-      height="53"
-      width="53"
-      preserveAspectRatio="xMidYMid meet"
-      class=""
+      height={size}
+      width={size}
+      preserveAspectRatio="xMidYMid slice"
       version="1.1"
       x="0px"
       y="0px"

@@ -8,6 +8,8 @@ import {
 import { create_open_conversation } from "../../../features/chatSlice";
 import { capitalize } from "../../../utils/string";
 import SocketContext from "../../../contexts/SocketContext";
+import { DocumentIcon, PhotoIcon } from "../../../svg";
+import { getDocumentName, isImgVid } from "../../../utils/lastDocumentName";
 
 function Conversation({ convo, socket, online, typing }) {
   const dispatch = useDispatch();
@@ -15,7 +17,8 @@ function Conversation({ convo, socket, online, typing }) {
   const { activeConversation } = useSelector((state) => state.chat);
   const { token } = user;
   const values = {
-    reciever_id: getConversationId(user, convo.users),
+    reciever_id: convo.isGroup ? "" : getConversationId(user, convo.users),
+    isGroup: convo.isGroup ? convo._id : false,
     token: token,
   };
   const openConversation = async () => {
@@ -43,8 +46,16 @@ function Conversation({ convo, socket, online, typing }) {
             }`}
           >
             <img
-              src={getConversationPicture(user, convo?.users)}
-              alt={getConversationName(user, convo?.users)}
+              src={
+                convo.isGroup
+                  ? convo.picture
+                  : getConversationPicture(user, convo?.users)
+              }
+              alt={
+                convo.isGroup
+                  ? convo.name
+                  : getConversationName(user, convo?.users)
+              }
               className="w-full h-full object-cover"
             />
           </div>
@@ -53,18 +64,36 @@ function Conversation({ convo, socket, online, typing }) {
             <div className="w-full flex flex-col">
               {/* convo name */}
               <h1 className="font-bold flex items-center gap-x-2">
-                {capitalize(getConversationName(user, convo?.users))}
+                {convo.isGroup
+                  ? convo.name
+                  : capitalize(getConversationName(user, convo?.users))}
               </h1>
               {/* conversation message */}
               <div className="flex items-center gap-x-1 dark:text-dark_text_2">
                 <div className="flex-1 items-center gap-x-1  dark:text-dark_text_2">
-                  {typing === activeConversation._id ? (
+                  {typing === convo._id ? (
                     <p className="font-bold text-green_1">Typing...</p>
-                  ) : (
-                    <p className="font-bold">
+                  ) : convo?.latestMessage?.message?.length > 0 ? (
+                    <p>
+                      {convo.isGroup && (
+                        <span className="font-bold">
+                          {`${convo?.latestMessage?.sender?.name} :  `}
+                        </span>
+                      )}
                       {convo?.latestMessage?.message?.length > 25
                         ? `${convo.latestMessage?.message.substring(0, 25)}...`
                         : convo.latestMessage?.message}
+                    </p>
+                  ) : (
+                    <p className="font-bold flex items-start">
+                      <span className="flex items-start justify-start mb-3">
+                        {isImgVid(convo) ? (
+                          <PhotoIcon size={30} />
+                        ) : (
+                          <DocumentIcon size={30} />
+                        )}
+                      </span>
+                      {getDocumentName(convo)}
                     </p>
                   )}
                 </div>

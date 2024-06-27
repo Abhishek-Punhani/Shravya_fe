@@ -1,6 +1,5 @@
 import { DownloadIcon } from "../../../../svg";
 function FileOther({ file, type }) {
-  console.log(file);
   return (
     <>
       <div className=" bg-green_4 p-2">

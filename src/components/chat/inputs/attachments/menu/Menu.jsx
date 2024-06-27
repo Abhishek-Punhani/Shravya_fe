@@ -1,7 +1,6 @@
 import {
   CameraIcon,
   ContactIcon,
-  DocumentIcon,
   PollIcon,
   StickerIcon,
 } from "../../../../../svg";

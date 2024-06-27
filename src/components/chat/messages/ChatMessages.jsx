@@ -13,11 +13,9 @@ function ChatMessages({ typing }) {
     scrollToBottom();
   }, [messages, typing]);
   const scrollToBottom = () => {
-    endRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
+    if (endRef.current) {
+      endRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -25,31 +23,31 @@ function ChatMessages({ typing }) {
       {/* Conatiner */}
       <div className="scrollbar overflow_scrollbar overflow-auto py-2 px-[4%]">
         {messages &&
-          messages.map((message) => (
-            <>
+          messages.map((message, i) => (
+            <React.Fragment key={message._id}>
               {/* Message Files */}
-              {message.files.length > 0
-                ? message.files.map((file) => (
-                    <FileMessage
-                      fileMessage={file}
-                      message={message}
-                      key={file?._id}
-                      me={user._id === message.sender._id}
-                    />
-                  ))
-                : null}
+              {message.files.length > 0 &&
+                message.files.map((file) => (
+                  <FileMessage
+                    fileMessage={file}
+                    message={message}
+                    key={file?._id}
+                    me={user._id === message.sender._id}
+                  />
+                ))}
               {/* Message text */}
-              {message?.message.length > 0 ? (
+              {message?.message.length > 0 && (
                 <Message
                   message={message}
-                  key={message?._id}
+                  key={message._id}
+                  i={i}
                   me={user._id === message.sender._id}
                 />
-              ) : null}
-            </>
+              )}
+            </React.Fragment>
           ))}
         {typing === activeConversation._id ? <Typing /> : null}
-        <div className="mt-2 h-[0.01px]" ref={endRef}></div>
+        <div className="mt-2 h-[1px]" ref={endRef}></div>
       </div>
     </div>
   );

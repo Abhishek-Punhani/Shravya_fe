@@ -29,7 +29,11 @@ function ChatContainer({ onlineUsers, typing }) {
       <div className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden">
         {/* Chat Header */}
         <ChatHeader
-          online={checkOnline(onlineUsers, user, activeConversation.users)}
+          online={
+            activeConversation.isGroup
+              ? false
+              : checkOnline(onlineUsers, user, activeConversation.users)
+          }
         />
 
         {files.length > 0 ? (

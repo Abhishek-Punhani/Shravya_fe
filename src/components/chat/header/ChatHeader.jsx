@@ -18,19 +18,29 @@ function ChatHeader({ online }) {
             {/* Conversation Image */}
             <button className="btn">
               <img
-                src={getConversationPicture(user, activeConversation.users)}
-                alt={capitalize(
-                  getConversationName(user, activeConversation.users)
-                )}
+                src={
+                  activeConversation.isGroup
+                    ? activeConversation.picture
+                    : getConversationPicture(user, activeConversation.users)
+                }
+                alt={
+                  activeConversation.isGroup
+                    ? activeConversation.name
+                    : capitalize(
+                        getConversationName(user, activeConversation.users)
+                      )
+                }
                 className="h-full w-full rounded-full object-cover"
               />
             </button>
             {/* Conversation Name and Online Status */}
             <div className="flex flex-col">
               <h1 className=" dark:text-dark_text_1 text-md font-bold">
-                {capitalize(
-                  getConversationName(user, activeConversation.users)
-                )}
+                {activeConversation.isGroup
+                  ? activeConversation.name
+                  : capitalize(
+                      getConversationName(user, activeConversation.users)
+                    )}
               </h1>
               <span className="text-xs dark:text-dark_svg_2">
                 {online ? "Online" : ""}
