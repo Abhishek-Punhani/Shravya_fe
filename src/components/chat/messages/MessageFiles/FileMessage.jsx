@@ -35,7 +35,7 @@ function FileMessage({ fileMessage, message, me }) {
               {type === "IMAGE" ? (
                 <img src={file.secure_url} alt="" />
               ) : type === "VIDEO" ? (
-                <video src={file.data.secure_url} controls></video>
+                <video src={file.data.secure_url} controls playsInline></video>
               ) : (
                 <FileOther file={file} type={type} message={message} />
               )}

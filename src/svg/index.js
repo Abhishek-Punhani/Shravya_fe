@@ -29,7 +29,16 @@ import TrashIcon from "./TrashIcon";
 import DownloadIcon from "./DownloadIcon";
 import ValidIcon from "./valid";
 import EditIcon from "./edit";
+import AddContactIcon from "./AddContactIcon";
+import SpeakerIcon from "./SpeakerIcon";
+import DialIcon from "./Dial";
+import VideoDialIcon from "./vedioDial";
+
 export {
+  VideoDialIcon,
+  DialIcon,
+  SpeakerIcon,
+  AddContactIcon,
   EditIcon,
   ValidIcon,
   CommunityIcon,

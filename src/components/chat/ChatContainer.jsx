@@ -7,7 +7,7 @@ import { ChatInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 
-function ChatContainer({ onlineUsers, typing }) {
+function ChatContainer({ onlineUsers, typing, callUser }) {
   const dispatch = useDispatch();
   const { activeConversation, files } = useSelector((state) => state.chat);
 
@@ -29,6 +29,7 @@ function ChatContainer({ onlineUsers, typing }) {
       <div className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden">
         {/* Chat Header */}
         <ChatHeader
+          callUser={callUser}
           online={
             activeConversation.isGroup
               ? false

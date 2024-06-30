@@ -3,7 +3,6 @@ import TraingleIcon from "../../../svg/triangle";
 import { useSelector } from "react-redux";
 function Message({ message, me, i }) {
   const { activeConversation, messages } = useSelector((state) => state.chat);
-  console.log(i);
   return (
     <>
       <div
