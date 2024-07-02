@@ -15,11 +15,13 @@ function CallInfos({ name, totalSecInCall, setTotalSecInCall, callAccepted }) {
             {totalSecInCall === 0 ? (
               <span className="text-dark_text_1">Ringing...</span>
             ) : null}
-            <CallTimes
-              totalSecInCall={totalSecInCall}
-              setTotalSecInCall={setTotalSecInCall}
-              callAccepted={callAccepted}
-            />
+            {callAccepted && (
+              <CallTimes
+                totalSecInCall={totalSecInCall}
+                setTotalSecInCall={setTotalSecInCall}
+                callAccepted={callAccepted}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -33,8 +33,12 @@ import AddContactIcon from "./AddContactIcon";
 import SpeakerIcon from "./SpeakerIcon";
 import DialIcon from "./Dial";
 import VideoDialIcon from "./vedioDial";
+import TickIcon from "./tick";
+import CrossIcon from "./cross";
 
 export {
+  TickIcon,
+  CrossIcon,
   VideoDialIcon,
   DialIcon,
   SpeakerIcon,

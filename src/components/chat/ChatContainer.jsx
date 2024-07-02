@@ -24,12 +24,12 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
   }, [activeConversation]);
   const [showPicker, setShowPicker] = useState(false);
   const [showAttachments, setShowAttachments] = useState(false);
+  const [edt, setedt] = useState(undefined);
   return (
     <>
       <div className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden">
         {/* Chat Header */}
         <ChatHeader
-          callUser={callUser}
           online={
             activeConversation.isGroup
               ? false
@@ -45,13 +45,15 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
         ) : (
           <>
             {/* Chat Messages */}
-            <ChatMessages typing={typing} />
+            <ChatMessages typing={typing} edt={edt} setedt={setedt} />
             {/* Chat Inputs */}
             <ChatInput
               showPicker={showPicker}
               setShowPicker={setShowPicker}
               showAttachments={showAttachments}
               setShowAttachments={setShowAttachments}
+              edt={edt}
+              setedt={setedt}
             />
           </>
         )}

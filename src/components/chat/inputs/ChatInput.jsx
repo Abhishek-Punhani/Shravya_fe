@@ -14,6 +14,8 @@ function ChatInput({
   setShowAttachments,
   setShowPicker,
   socket,
+  edt,
+  setedt,
 }) {
   const dispacth = useDispatch();
   const [msg, setMsg] = useState("");
@@ -64,7 +66,13 @@ function ChatInput({
             />
           </ul>
           {/* Input */}
-          <Input msg={msg} setMsg={setMsg} textRef={textRef} />
+          <Input
+            msg={msg}
+            setMsg={setMsg}
+            textRef={textRef}
+            edt={edt}
+            setedt={setedt}
+          />
           {/* send icon */}
           <button className="btn">
             {status === "loading" && loading ? (

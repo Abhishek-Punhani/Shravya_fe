@@ -34,7 +34,8 @@
     "svgo": "^3.3.2",
     "web-vitals": "^2.1.4",
     "webpack": "^5.92.1",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "zego-express-engine-webrtc": "^3.5.0"
   },
   "scripts": {
     "start": "react-scripts start",

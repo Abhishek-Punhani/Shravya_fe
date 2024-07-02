@@ -5,12 +5,15 @@ import { useSelector } from "react-redux";
 import Typing from "./typing";
 import FileMessage from "./MessageFiles/FileMessage";
 
-function ChatMessages({ typing }) {
+function ChatMessages({ typing, setedt }) {
   const { user } = useSelector((state) => state.user);
   const { messages, activeConversation } = useSelector((state) => state.chat);
   const endRef = useRef(null);
   useEffect(() => {
-    scrollToBottom();
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100); // Adding a slight delay
+    return () => clearTimeout(timeoutId);
   }, [messages, typing]);
   const scrollToBottom = () => {
     if (endRef.current) {
@@ -42,12 +45,13 @@ function ChatMessages({ typing }) {
                   key={message._id}
                   i={i}
                   me={user._id === message.sender._id}
+                  setedt={setedt}
                 />
               )}
             </React.Fragment>
           ))}
         {typing === activeConversation._id ? <Typing /> : null}
-        <div className="mt-2 h-[1px]" ref={endRef}></div>
+        <div className="mt-2 h-[5px]" ref={endRef}></div>
       </div>
     </div>
   );

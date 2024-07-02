@@ -1,14 +1,22 @@
 import moment from "moment";
 import TraingleIcon from "../../../svg/triangle";
-import { useSelector } from "react-redux";
-function Message({ message, me, i }) {
+import { useDispatch, useSelector } from "react-redux";
+import { editMessage } from "../../../features/chatSlice";
+function Message({ message, me, i, setedt }) {
+  const dispatch = useDispatch();
   const { activeConversation, messages } = useSelector((state) => state.chat);
+  const handleEditMsg = async () => {
+    // const edtMsg = await dispatch(editMessage(message));
+    // console.log(edtMsg);
+    setedt(message);
+  };
   return (
     <>
       <div
         className={`w-full flex mt-2 space-x-3 max-w-xs ${
           me ? "ml-auto justify-end" : ""
         }`}
+        onDoubleClick={() => handleEditMsg}
       >
         {/* Message Conatiner */}
         <div className="relative">

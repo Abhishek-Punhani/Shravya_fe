@@ -1,3 +1,4 @@
+import { useDispatch } from "react-redux";
 import {
   ArrowIcon,
   DialIcon,
@@ -6,7 +7,7 @@ import {
   VideoDialIcon,
 } from "../../../svg";
 
-function CallActions({ endCall }) {
+function CallActions({ leaveCall }) {
   return (
     <>
       <div className="absolute bottom-0 w-full h-22 px-1 z-50">
@@ -25,7 +26,7 @@ function CallActions({ endCall }) {
             </li>
             <li>
               <button className="btn_secondary">
-                <VideoDialIcon className="fill-white w-14 mt-2.5" />
+                <VideoDialIcon className="fill-white w-14 mt-2.5 h-full" />
               </button>
             </li>
             <li>
@@ -36,7 +37,7 @@ function CallActions({ endCall }) {
             <li>
               <button
                 className="btn_secondary rotate-[135deg] bg-red-500"
-                onClick={() => endCall()}
+                onClick={() => leaveCall()}
               >
                 <DialIcon className="fill-white w-5" />
               </button>

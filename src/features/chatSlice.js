@@ -12,6 +12,8 @@ const initialState = {
   activeConversation: {},
   notifications: [],
   files: [],
+  call: undefined,
+  incomingCall: undefined,
 };
 
 // Functions
@@ -108,6 +110,26 @@ export const createGroupConvo = createAsyncThunk(
           },
         }
       );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+export const getZegoToken = createAsyncThunk(
+  "getZegoToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${CONVERSATION_ENDPOINT}/get_zego_token`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       return data;
     } catch (error) {
@@ -117,6 +139,28 @@ export const createGroupConvo = createAsyncThunk(
   }
 );
 
+export const editMessage = createAsyncThunk(
+  "editMessage",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { token, message } = values;
+      const { data } = await axios.post(
+        `${MESSAGES_ENDPOINT}/edit`,
+        { message },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -153,6 +197,25 @@ export const chatSlice = createSlice({
       let fileToRemove = files[index];
       files = files.filter((file) => file !== fileToRemove);
       state.files = [...files];
+    },
+    setCall: (state, action) => {
+      return {
+        ...state,
+        call: action.payload,
+      };
+    },
+    setIncomingCall: (state, action) => {
+      return {
+        ...state,
+        incomingCall: action.payload,
+      };
+    },
+    endCall: (state, action) => {
+      return {
+        ...state,
+        call: undefined,
+        incomingCall: undefined,
+      };
     },
   },
   extraReducers(builder) {
@@ -225,5 +288,8 @@ export const {
   addFiles,
   clearFiles,
   removeFile,
+  setCall,
+  setIncomingCall,
+  endCall,
 } = chatSlice.actions;
 export default chatSlice.reducer;

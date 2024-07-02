@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  CallIcon,
   DialIcon,
   DotsIcon,
   SearchLargeIcon,
@@ -10,10 +9,24 @@ import { capitalize } from "../../../utils/string";
 import {
   getConversationName,
   getConversationPicture,
+  getConversationUser,
 } from "../../../utils/chat";
-function ChatHeader({ online, callUser }) {
+import { setCall } from "../../../features/chatSlice";
+function ChatHeader({ online }) {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { activeConversation } = useSelector((state) => state.chat);
+  const handleCall = async (type) => {
+    await dispatch(
+      setCall({
+        ...getConversationUser(user, activeConversation.users),
+        type: "out-going",
+        callType: type.toString() === "video" ? "video" : "voice",
+        roomId: Date.now(),
+        accepted: false,
+      })
+    );
+  };
   return (
     <>
       <div className=" h-[59px] w-full flex items-center dark:bg-dark_bg_2 select-none p-[16px]">
@@ -56,12 +69,12 @@ function ChatHeader({ online, callUser }) {
           {/* Right */}
           <div className="flex items-center gap-x-2.5">
             <ul className="flex items-center">
-              <li onClick={() => callUser()}>
+              <li onClick={() => handleCall("video")}>
                 <button className="btn">
                   <VideoDialIcon className="dark:fill-dark_svg_1 scale-[90%] mt-2" />
                 </button>
               </li>
-              <li>
+              <li onClick={() => handleCall("voice")}>
                 <button className="btn flex items-center justify-center">
                   <DialIcon className="dark:fill-dark_svg_1 scale-50" />
                 </button>
