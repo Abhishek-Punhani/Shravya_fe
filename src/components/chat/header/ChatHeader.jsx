@@ -79,11 +79,7 @@ function ChatHeader({ online }) {
                   <DialIcon className="dark:fill-dark_svg_1 scale-50" />
                 </button>
               </li>
-              <li>
-                <button className="btn">
-                  <SearchLargeIcon className="dark:fill-dark_svg_1" />
-                </button>
-              </li>
+
               <li>
                 <button className="btn">
                   <SearchLargeIcon className="dark:fill-dark_svg_1" />

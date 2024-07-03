@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import {
   endCall,
   getConversations,
-  setCall,
   setIncomingCall,
+  updateEditedMessage,
   updateMessages,
 } from "../features/chatSlice";
 import { ChatContainer, WelcomeHome } from "../components/chat";
@@ -22,7 +22,6 @@ function Home({ socket }) {
   );
   const [totalSecInCall, setTotalSecInCall] = useState(0);
   // join event for socket io
-
   //join user into the socket io
   useEffect(() => {
     socket.emit("join", user._id);
@@ -46,6 +45,10 @@ function Home({ socket }) {
     // Listening typing..
     socket.on("typing", (conversation) => setTyping(conversation));
     socket.on("stop_typing", (conversation) => setTyping(conversation));
+    // edited
+    socket.on("editMsg", async (msg) => {
+      await dispatch(updateEditedMessage(msg));
+    });
   }, []);
 
   // call

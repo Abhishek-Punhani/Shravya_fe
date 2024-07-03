@@ -9,6 +9,8 @@ function EmojiPickerApp({
   showPicker,
   setShowPicker,
   setShowAttachments,
+  edt,
+  setedt,
 }) {
   const [cursorPosition, setCursorPosition] = useState();
   useEffect(() => {
@@ -18,11 +20,23 @@ function EmojiPickerApp({
     const { emoji } = emojiData;
     const ref = textRef.current;
     ref.focus();
-    const start = msg.substring(0, ref.selectionStart);
-    const end = msg.substring(ref.selectionStart);
-    const newText = start + emoji + end;
-    setMsg(newText);
-    setCursorPosition(start.length + emoji.length);
+
+    if (edt) {
+      const start = edt.message.substring(0, ref.selectionStart);
+      const end = edt.message.substring(ref.selectionStart);
+      const newText = start + emoji + end;
+      setedt({
+        ...edt,
+        message: newText,
+      });
+      setCursorPosition(start.length + emoji.length);
+    } else {
+      const start = msg.substring(0, ref.selectionStart);
+      const end = msg.substring(ref.selectionStart);
+      const newText = start + emoji + end;
+      setMsg(newText);
+      setCursorPosition(start.length + emoji.length);
+    }
   };
 
   return (

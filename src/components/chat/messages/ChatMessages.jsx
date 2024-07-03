@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import Typing from "./typing";
 import FileMessage from "./MessageFiles/FileMessage";
 
-function ChatMessages({ typing, setedt }) {
+function ChatMessages({ typing, setedt, setReply, reply }) {
   const { user } = useSelector((state) => state.user);
   const { messages, activeConversation } = useSelector((state) => state.chat);
   const endRef = useRef(null);
@@ -14,7 +14,7 @@ function ChatMessages({ typing, setedt }) {
       scrollToBottom();
     }, 100); // Adding a slight delay
     return () => clearTimeout(timeoutId);
-  }, [messages, typing]);
+  }, [messages, typing, reply]);
   const scrollToBottom = () => {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" });
@@ -22,7 +22,7 @@ function ChatMessages({ typing, setedt }) {
   };
 
   return (
-    <div className="mb-[60px] bg-[url('https://res.cloudinary.com/dmhcnhtng/image/upload/v1677358270/Untitled-1_copy_rpx8yb.jpg')] bg-cover bg-no-repeat">
+    <div className=" bg-[url('https://res.cloudinary.com/dmhcnhtng/image/upload/v1677358270/Untitled-1_copy_rpx8yb.jpg')] bg-cover bg-no-repeat">
       {/* Conatiner */}
       <div className="scrollbar overflow_scrollbar overflow-auto py-2 px-[4%]">
         {messages &&
@@ -46,12 +46,16 @@ function ChatMessages({ typing, setedt }) {
                   i={i}
                   me={user._id === message.sender._id}
                   setedt={setedt}
+                  setReply={setReply}
                 />
               )}
             </React.Fragment>
           ))}
         {typing === activeConversation._id ? <Typing /> : null}
-        <div className="mt-2 h-[5px]" ref={endRef}></div>
+        <div
+          className={`mt-1 h-[0.01px] bg-none ${reply && "mt-9 h-5"}`}
+          ref={endRef}
+        ></div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import ChatHeader from "./header/ChatHeader";
 import ChatMessages from "./messages/ChatMessages";
 import { useEffect, useState } from "react";
 import { getCoversationMessages } from "../../features/chatSlice";
-import { ChatInput } from "./inputs";
+import { ChatInput, EditMsgInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 
@@ -25,10 +25,12 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
   const [showPicker, setShowPicker] = useState(false);
   const [showAttachments, setShowAttachments] = useState(false);
   const [edt, setedt] = useState(undefined);
+  const [reply, setReply] = useState(undefined);
   return (
     <>
       <div className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden">
         {/* Chat Header */}
+
         <ChatHeader
           online={
             activeConversation.isGroup
@@ -36,7 +38,6 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
               : checkOnline(onlineUsers, user, activeConversation.users)
           }
         />
-
         {files.length > 0 ? (
           <>
             {/* Files preview*/}
@@ -45,16 +46,32 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
         ) : (
           <>
             {/* Chat Messages */}
-            <ChatMessages typing={typing} edt={edt} setedt={setedt} />
-            {/* Chat Inputs */}
-            <ChatInput
-              showPicker={showPicker}
-              setShowPicker={setShowPicker}
-              showAttachments={showAttachments}
-              setShowAttachments={setShowAttachments}
-              edt={edt}
+            <ChatMessages
+              typing={typing}
               setedt={setedt}
+              setReply={setReply}
+              reply={reply}
             />
+            {/* Chat Inputs */}
+            {edt ? (
+              <EditMsgInput
+                showPicker={showPicker}
+                setShowPicker={setShowPicker}
+                showAttachments={showAttachments}
+                setShowAttachments={setShowAttachments}
+                edt={edt}
+                setedt={setedt}
+              />
+            ) : (
+              <ChatInput
+                showPicker={showPicker}
+                setShowPicker={setShowPicker}
+                showAttachments={showAttachments}
+                setShowAttachments={setShowAttachments}
+                setReply={setReply}
+                reply={reply}
+              />
+            )}
           </>
         )}
       </div>

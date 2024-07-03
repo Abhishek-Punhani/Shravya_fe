@@ -79,10 +79,10 @@ export const sendMessages = createAsyncThunk(
   "message/send",
   async (values, { rejectWithValue }) => {
     try {
-      const { token, message, convo_id, files } = values;
+      const { token, message, convo_id, files, isReply } = values;
       const { data } = await axios.post(
         `${MESSAGES_ENDPOINT}`,
-        { message, convo_id, files },
+        { message, convo_id, files, isReply },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -153,7 +153,6 @@ export const editMessage = createAsyncThunk(
           },
         }
       );
-
       return data;
     } catch (error) {
       console.log(error);
@@ -217,6 +216,26 @@ export const chatSlice = createSlice({
         incomingCall: undefined,
       };
     },
+    updateEditedMessage: (state, action) => {
+      const messages = [...state.messages];
+      const i = messages.findIndex((msg) => msg._id === action.payload._id);
+      messages[i].message = action.payload.message;
+      messages[i].isEdited = true;
+      state.messages = [...messages];
+      if (i === messages.length - 1) {
+        let conversation = {
+          ...action.payload.conversation,
+          latestMessage: action.payload,
+        };
+        let newConvos = [...state.conversations].filter(
+          (c) => c._id !== conversation._id
+        );
+        newConvos.unshift(conversation);
+        state.conversations = newConvos;
+        state.files = [];
+        state.error = "";
+      }
+    },
   },
   extraReducers(builder) {
     builder
@@ -278,6 +297,34 @@ export const chatSlice = createSlice({
       .addCase(sendMessages.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(editMessage.pending, (state, action) => {
+        state.status = "pending";
+      })
+      .addCase(editMessage.fulfilled, (state, action) => {
+        state.status = "suceeded";
+        const messages = [...state.messages];
+        const i = messages.findIndex((msg) => msg._id === action.payload._id);
+        messages[i].message = action.payload.message;
+        messages[i].isEdited = true;
+        state.messages = [...messages];
+        if (i === messages.length - 1) {
+          let conversation = {
+            ...action.payload.conversation,
+            latestMessage: action.payload,
+          };
+          let newConvos = [...state.conversations].filter(
+            (c) => c._id !== conversation._id
+          );
+          newConvos.unshift(conversation);
+          state.conversations = newConvos;
+          state.files = [];
+        }
+        state.error = "";
+      })
+      .addCase(editMessage.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
@@ -291,5 +338,6 @@ export const {
   setCall,
   setIncomingCall,
   endCall,
+  updateEditedMessage,
 } = chatSlice.actions;
 export default chatSlice.reducer;
