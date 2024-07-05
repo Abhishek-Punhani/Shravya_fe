@@ -1,18 +1,41 @@
 import moment from "moment";
 import TraingleIcon from "../../../svg/triangle";
 import { useSelector } from "react-redux";
-function Message({ message, me, i, setedt, setReply }) {
+import { useState, useRef } from "react";
+import ContextMenu from "./ContextMenu";
+
+function Message({ message, me, i, setedt, setReply, show, setShow }) {
   const { user } = useSelector((state) => state.user);
   const { activeConversation, messages } = useSelector((state) => state.chat);
+
+  const messageRef = useRef(null);
+  const [contextMenuDirection, setContextMenuDirection] = useState("down");
+
+  const handleContextMenu = () => {
+    const messageBounds = messageRef.current.getBoundingClientRect();
+    const availableSpaceBelow = window.innerHeight - messageBounds.bottom;
+    const menuHeight = 210;
+    if (availableSpaceBelow < menuHeight) {
+      setContextMenuDirection("up");
+    } else {
+      setContextMenuDirection("down");
+    }
+    setShow(message._id);
+  };
+
   return (
     <>
       <div
-        className={` flex mt-2 space-x-3 max-w-[20rem] h-fit ${
+        ref={messageRef}
+        className={`relative flex mt-2 w-fit space-x-3 max-w-[20rem] h-fit ${
           me ? "ml-auto justify-end" : ""
         }`}
-        onClick={() => setReply(message)}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleContextMenu();
+        }}
       >
-        {/* Message Conatiner */}
+        {/* Message Container */}
         <div className="relative">
           {/* Sender Pic */}
           {activeConversation.isGroup &&
@@ -73,7 +96,7 @@ function Message({ message, me, i, setedt, setReply }) {
               </div>
             )}
             <div
-              className={`max-w-[18rem] float-left h-full text-sm pr-8  break-words pl-2 ${
+              className={`max-w-[18rem] float-left h-full text-sm pr-8 break-words pl-2 ${
                 message?.isEdited ? "pb-6" : "pb-4"
               }`}
             >
@@ -86,19 +109,27 @@ function Message({ message, me, i, setedt, setReply }) {
             </div>
 
             {/* Triangle */}
-            {
-              <span>
-                <TraingleIcon
-                  className={` absolute ${
-                    me
-                      ? " bottom-[-8px] -right-2 rotate-[135deg] scale-[60%] fill-green_3 "
-                      : "top-[-5px] -left-1.5 rotate-[60deg] dark:fill-dark_bg_2 "
-                  }`}
-                />
-              </span>
-            }
+            <span>
+              <TraingleIcon
+                className={`absolute ${
+                  me
+                    ? "bottom-[-8px] -right-2 rotate-[135deg] scale-[60%] fill-green_3"
+                    : "top-[-5px] -left-1.5 rotate-[60deg] dark:fill-dark_bg_2"
+                }`}
+              />
+            </span>
           </div>
         </div>
+        {/* Context Menu */}
+        <ContextMenu
+          contextMenuDirection={contextMenuDirection}
+          show={show}
+          me={me}
+          message={message}
+          setedt={setedt}
+          setReply={setReply}
+          setShow={setShow}
+        />
       </div>
     </>
   );

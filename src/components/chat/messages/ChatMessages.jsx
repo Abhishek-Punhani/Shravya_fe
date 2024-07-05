@@ -5,7 +5,15 @@ import { useSelector } from "react-redux";
 import Typing from "./typing";
 import FileMessage from "./MessageFiles/FileMessage";
 
-function ChatMessages({ typing, setedt, setReply, reply }) {
+function ChatMessages({
+  typing,
+  setedt,
+  setReply,
+  reply,
+  setDelMsg,
+  show,
+  setShow,
+}) {
   const { user } = useSelector((state) => state.user);
   const { messages, activeConversation } = useSelector((state) => state.chat);
   const endRef = useRef(null);
@@ -47,6 +55,9 @@ function ChatMessages({ typing, setedt, setReply, reply }) {
                   me={user._id === message.sender._id}
                   setedt={setedt}
                   setReply={setReply}
+                  setDelMsg={setDelMsg}
+                  show={show}
+                  setShow={setShow}
                 />
               )}
             </React.Fragment>

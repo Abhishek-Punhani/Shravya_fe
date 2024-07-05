@@ -9,34 +9,21 @@ function EmojiPickerApp({
   showPicker,
   setShowPicker,
   setShowAttachments,
-  edt,
-  setedt,
 }) {
   const [cursorPosition, setCursorPosition] = useState();
   useEffect(() => {
     textRef.current.selectionEnd = cursorPosition;
   }, [cursorPosition, textRef]);
   const handleEmoji = (emojiData, e) => {
+    e.stopPropagation();
     const { emoji } = emojiData;
     const ref = textRef.current;
     ref.focus();
-
-    if (edt) {
-      const start = edt.message.substring(0, ref.selectionStart);
-      const end = edt.message.substring(ref.selectionStart);
-      const newText = start + emoji + end;
-      setedt({
-        ...edt,
-        message: newText,
-      });
-      setCursorPosition(start.length + emoji.length);
-    } else {
-      const start = msg.substring(0, ref.selectionStart);
-      const end = msg.substring(ref.selectionStart);
-      const newText = start + emoji + end;
-      setMsg(newText);
-      setCursorPosition(start.length + emoji.length);
-    }
+    const start = msg.substring(0, ref.selectionStart);
+    const end = msg.substring(ref.selectionStart);
+    const newText = start + emoji + end;
+    setMsg(newText);
+    setCursorPosition(start.length + emoji.length);
   };
 
   return (
@@ -45,7 +32,8 @@ function EmojiPickerApp({
         <button
           className="btn"
           type="button"
-          onClick={() => {
+          onClick={(event) => {
+            event.stopPropagation();
             setShowAttachments(false);
             setShowPicker((prev) => !prev);
           }}
@@ -59,7 +47,11 @@ function EmojiPickerApp({
         {/* Emoji picker */}
         {showPicker && (
           <div className="openEmojiAnimation w-[50%]  flex flex-col justify-start absolute bottom-[60px] left-[-0.5px]">
-            <EmojiPicker theme="dark" onEmojiClick={handleEmoji} />
+            <EmojiPicker
+              theme="dark"
+              onEmojiClick={handleEmoji}
+              onClick={(event) => event.stopPropagation()}
+            />
           </div>
         )}
       </li>

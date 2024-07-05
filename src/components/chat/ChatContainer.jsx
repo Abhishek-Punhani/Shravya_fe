@@ -26,9 +26,22 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
   const [showAttachments, setShowAttachments] = useState(false);
   const [edt, setedt] = useState(undefined);
   const [reply, setReply] = useState(undefined);
+  const [delMsg, setDelMsg] = useState(undefined);
+  const [show, setShow] = useState(undefined);
   return (
     <>
-      <div className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden">
+      <div
+        className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden"
+        onClick={() => {
+          setShow(false);
+          if (showAttachments) {
+            setShowAttachments(false);
+          }
+          if (showPicker) {
+            setShowPicker(false);
+          }
+        }}
+      >
         {/* Chat Header */}
 
         <ChatHeader
@@ -51,6 +64,8 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
               setedt={setedt}
               setReply={setReply}
               reply={reply}
+              show={show}
+              setShow={setShow}
             />
             {/* Chat Inputs */}
             {edt ? (

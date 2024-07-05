@@ -37,7 +37,9 @@ function ChatInput({
     let isReply = undefined;
     if (reply) {
       isReply = {
-        name: reply?.sender.name,
+        name: reply.conversation.isGroup
+          ? `${reply?.sender.name} | ${reply.conversation.name}`
+          : `${reply?.sender.name}`,
         message: reply?.message,
         id: reply?.sender._id,
       };
@@ -49,7 +51,6 @@ function ChatInput({
       isReply: reply ? isReply : undefined,
       files: [],
     };
-    console.log(values);
     setLoading(true);
     let newMsg = await dispatch(sendMessages(values));
     socket.emit("new_message", newMsg.payload);
@@ -87,6 +88,8 @@ function ChatInput({
                     {reply.sender._id === user._id
                       ? "You"
                       : `${reply.sender.name}`}
+                    {reply.conversation.isGroup &&
+                      ` | ${reply.conversation.name}`}
                   </h3>
                 </div>
 

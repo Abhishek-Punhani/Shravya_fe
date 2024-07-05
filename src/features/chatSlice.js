@@ -160,6 +160,30 @@ export const editMessage = createAsyncThunk(
     }
   }
 );
+
+export const deleteMessage = createAsyncThunk(
+  "DeleteMessage",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { token, id } = values;
+      const { data } = await axios.post(
+        `${MESSAGES_ENDPOINT}/delete`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
@@ -234,6 +258,22 @@ export const chatSlice = createSlice({
         state.conversations = newConvos;
         state.files = [];
         state.error = "";
+      }
+    },
+    updateDeleteMessages: (state, action) => {
+      let messages = [...state.messages];
+      messages = messages.filter((msg) => msg._id !== action.payload._id);
+      state.messages = [...messages];
+      if (!action.payload.conversation?.latestMessage) {
+        let conversation = {
+          ...action.payload.conversation,
+          latestMessage: messages[messages.length - 1],
+        };
+        let newConvos = [...state.conversations].filter(
+          (c) => c._id !== conversation._id
+        );
+        newConvos.unshift(conversation);
+        state.conversations = newConvos;
       }
     },
   },
@@ -325,6 +365,31 @@ export const chatSlice = createSlice({
       .addCase(editMessage.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(deleteMessage.pending, (state, action) => {
+        state.status = "pending";
+      })
+      .addCase(deleteMessage.fulfilled, (state, action) => {
+        state.status = "suceeded";
+        let messages = [...state.messages];
+        messages = messages.filter((msg) => msg._id !== action.payload._id);
+        state.messages = [...messages];
+        if (!action.payload.conversation?.latestMessage) {
+          let conversation = {
+            ...action.payload.conversation,
+            latestMessage: messages[messages.length - 1],
+          };
+          let newConvos = [...state.conversations].filter(
+            (c) => c._id !== conversation._id
+          );
+          newConvos.unshift(conversation);
+          state.conversations = newConvos;
+        }
+        state.error = "";
+      })
+      .addCase(deleteMessage.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
@@ -339,5 +404,6 @@ export const {
   setIncomingCall,
   endCall,
   updateEditedMessage,
+  updateDeleteMessages,
 } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -20,21 +20,30 @@ function EditMsgInput({
   const { user } = useSelector((state) => state.user);
   const { token } = user;
   const inputRef = useRef();
+  const [msg, setMsg] = useState("");
   const editMessageHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
+    if (msg.trim() === edt.message) {
+      setShowPicker(false);
+      setedt(undefined);
+      setMsg("");
+      return;
+    }
     const values = {
       token,
-      message: edt,
+      message: { ...edt, message: msg },
     };
-    const res = await dispatch(editMessage(values));
+    await dispatch(editMessage(values));
     socket.emit("editMsg", { edt, user });
     setLoading(false);
     setShowPicker(false);
     setedt(undefined);
+    setMsg("");
   };
   useEffect(() => {
     if (edt) {
+      setMsg(edt.message);
       inputRef.current.focus();
       const messageLength = edt.message.length;
       // Set the selection range to the end of the message
@@ -56,8 +65,8 @@ function EditMsgInput({
               showPicker={showPicker}
               setShowPicker={setShowPicker}
               setShowAttachments={setShowAttachments}
-              edt={edt}
-              setedt={setedt}
+              msg={msg}
+              setMsg={setMsg}
             />
           </ul>
           {/* Input */}
@@ -65,13 +74,8 @@ function EditMsgInput({
             type="text"
             className="w-full rounded-2xl dark:bg-dark_hover_1 dark:text-dark_text_1 outline-none flex-1 py-2 px-4"
             placeholder="type your message"
-            onChange={(e) =>
-              setedt({
-                ...edt,
-                message: e.target.value,
-              })
-            }
-            value={edt.message}
+            onChange={(e) => setMsg(e.target.value)}
+            value={msg}
             ref={inputRef}
           />
           {/* send icon */}

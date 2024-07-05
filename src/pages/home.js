@@ -5,6 +5,7 @@ import {
   endCall,
   getConversations,
   setIncomingCall,
+  updateDeleteMessages,
   updateEditedMessage,
   updateMessages,
 } from "../features/chatSlice";
@@ -48,6 +49,11 @@ function Home({ socket }) {
     // edited
     socket.on("editMsg", async (msg) => {
       await dispatch(updateEditedMessage(msg));
+    });
+    // delete Message
+    socket.on("deleteMsg", async (msg) => {
+      console.log(msg);
+      await dispatch(updateDeleteMessages(msg));
     });
   }, []);
 

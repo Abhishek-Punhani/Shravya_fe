@@ -7,7 +7,8 @@ function Attachments({ showAttachments, setShowAttachments, setShowPicker }) {
       <button
         className="btn"
         type="button"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           setShowPicker(false);
           setShowAttachments((prev) => !prev);
         }}
