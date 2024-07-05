@@ -4,6 +4,7 @@ import {
   deleteMessage,
 } from "../../../features/chatSlice";
 import SocketContext from "../../../contexts/SocketContext";
+import { useState } from "react";
 function ContextMenu({
   contextMenuDirection,
   me,
@@ -16,7 +17,7 @@ function ContextMenu({
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { activeConversation, messages } = useSelector((state) => state.chat);
   const { token } = user;
   const handlePrivateReply = async () => {
     if (activeConversation.isGroup && !me) {
@@ -30,12 +31,16 @@ function ContextMenu({
     }
   };
   const handleDeleteMsg = async () => {
+    let lastMessage = undefined;
+    if (activeConversation.latestMessage._id === message._id) {
+      lastMessage = messages[messages.length - 2];
+    }
     const values = {
       token,
       id: message._id,
+      LastMessage: lastMessage,
     };
     const msg = await dispatch(deleteMessage(values));
-    console.log(msg);
     socket.emit("deleteMsg", msg.payload);
   };
   return (

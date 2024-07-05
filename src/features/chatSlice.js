@@ -165,10 +165,10 @@ export const deleteMessage = createAsyncThunk(
   "DeleteMessage",
   async (values, { rejectWithValue }) => {
     try {
-      const { token, id } = values;
+      const { token, id, LastMessage } = values;
       const { data } = await axios.post(
         `${MESSAGES_ENDPOINT}/delete`,
-        { id },
+        { id, LastMessage },
         {
           headers: {
             Authorization: `Bearer ${token}`,
