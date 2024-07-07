@@ -30,6 +30,7 @@ function ChatInput({
   useEffect(() => {
     if (reply) {
       textRef.current.focus();
+      console.log(reply);
     }
   }, [reply]);
   const onSubmitHandler = async (e) => {
@@ -42,6 +43,13 @@ function ChatInput({
           : `${reply?.sender.name}`,
         message: reply?.message,
         id: reply?.sender._id,
+        file: {
+          name: `${reply?.file?.file.original_filename}.${
+            reply?.file?.file.public_id.split(".")[1]
+          }`,
+          url: reply?.file?.file.secure_url,
+          type: reply?.file?.type,
+        },
       };
     }
     const values = {
@@ -50,6 +58,7 @@ function ChatInput({
       message: msg,
       isReply: reply ? isReply : undefined,
       files: [],
+      isForwarded: undefined,
     };
     setLoading(true);
     let newMsg = await dispatch(sendMessages(values));
@@ -62,43 +71,57 @@ function ChatInput({
   return (
     <>
       <form
-        className="w-full dark:bg-dark_bg_2 h-fit flex flex-col items-center absolute bottom-0 py-2 px-4 select-none"
+        className="w-full dark:bg-dark_bg_2 min-h-[50px] flex flex-col items-center absolute bottom-0 py-2 px-4 select-none"
         onSubmit={(e) => {
           onSubmitHandler(e);
         }}
       >
         {reply && (
-          <div className=" flex justify-between items-center w-full pr-3 select-none pb-1 h-[60px]">
+          <div className=" flex justify-between items-center w-full pr-3 select-none pb-1 h-[65px]">
             <div className=" w-full top-0 h-[60px] flex">
-              <div className="w-full bg-[#2c3840] pt-2 h-fit">
-                <div className="flex items-center justify-start ml-[1%]">
-                  {/* Sender Pic */}
-                  <div className="">
-                    <img
-                      src={reply.sender.picture}
-                      alt=""
-                      className="w-6 h-6 rounded-full"
-                    />
+              <div className="w-full bg-[#2c3840] pt-2 h-fit flex justify-between px-3 pb-2 ">
+                <div className="flex flex-col w-full ">
+                  <div className="flex items-center justify-start ml-[1%]">
+                    {/* Sender Pic */}
+                    <div className="">
+                      <img
+                        src={reply.sender.picture}
+                        alt=""
+                        className="w-6 h-6 rounded-full"
+                      />
+                    </div>
+                    <h3
+                      className={`text-purple-300 text-[15px] ml-3 block ${
+                        reply.sender._id === user._id ? "text-yellow-200" : ""
+                      }`}
+                    >
+                      {reply.sender._id === user._id
+                        ? "You"
+                        : `${reply.sender.name}`}
+                      {reply.conversation.isGroup &&
+                        ` | ${reply.conversation.name}`}
+                    </h3>
                   </div>
-                  <h3
-                    className={`text-purple-300 text-[15px] ml-3 block ${
-                      reply.sender._id === user._id ? "text-yellow-200" : ""
-                    }`}
-                  >
-                    {reply.sender._id === user._id
-                      ? "You"
-                      : `${reply.sender.name}`}
-                    {reply.conversation.isGroup &&
-                      ` | ${reply.conversation.name}`}
-                  </h3>
-                </div>
 
-                <div className=" ml-[5%] w-full max-h-[70%]">
-                  <p className="text-[12px] dark:text-gray-200 mr-[8%] break-words max-w-[80%]">
-                    {reply.message.length > 120
-                      ? `${reply.message.substring(0, 120)}...`
-                      : `${reply.message}`}
-                  </p>
+                  <div className=" ml-[5%] w-full max-h-[70%]">
+                    <p className="text-[12px] dark:text-gray-200 mr-[8%] break-words max-w-[80%]">
+                      {reply.message.length > 0
+                        ? reply.message.length > 120
+                          ? `${reply.message.substring(0, 120)}...`
+                          : `${reply.message}`
+                        : `${reply?.file?.file?.original_filename}.${
+                            reply?.file?.file?.public_id.split(".")[1]
+                          }`}
+                    </p>
+                  </div>
+                </div>
+                {/* Reply Image  */}
+                <div className="max-h-full">
+                  <img
+                    src={reply?.file?.file?.secure_url}
+                    alt=""
+                    className="max-h-10"
+                  />
                 </div>
               </div>
             </div>

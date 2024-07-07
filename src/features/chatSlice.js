@@ -57,6 +57,28 @@ export const create_open_conversation = createAsyncThunk(
     }
   }
 );
+export const getConversationId = createAsyncThunk(
+  "conversation/getId",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { token, reciever_id } = values;
+      const { data } = await axios.post(
+        CONVERSATION_ENDPOINT,
+        { reciever_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return data._id;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
 export const getCoversationMessages = createAsyncThunk(
   "conversation/messages",
   async (values, { rejectWithValue }) => {
@@ -79,10 +101,10 @@ export const sendMessages = createAsyncThunk(
   "message/send",
   async (values, { rejectWithValue }) => {
     try {
-      const { token, message, convo_id, files, isReply } = values;
+      const { token, message, convo_id, file, isReply, isForwarded } = values;
       const { data } = await axios.post(
         `${MESSAGES_ENDPOINT}`,
-        { message, convo_id, files, isReply },
+        { message, convo_id, file, isReply, isForwarded },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -276,6 +298,12 @@ export const chatSlice = createSlice({
         state.conversations = newConvos;
       }
     },
+    updateFileMessage: (state, action) => {
+      let { i, msg } = action.payload;
+      let files = [...state.files];
+      files[i].message = msg;
+      state.files = [...files];
+    },
   },
   extraReducers(builder) {
     builder
@@ -405,5 +433,6 @@ export const {
   endCall,
   updateEditedMessage,
   updateDeleteMessages,
+  updateFileMessage,
 } = chatSlice.actions;
 export default chatSlice.reducer;

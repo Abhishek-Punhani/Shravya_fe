@@ -8,15 +8,17 @@ export const uploadFiles = async (files) => {
   formData.append("upload_preset", cloud_secret);
   let uploaded = [];
   for (const f of files) {
-    const { file, type } = f;
+    const { file, type, message } = f;
     formData.append("file", file);
     let res = await uploadToCloudinary(formData, type);
     uploaded.push({
       file: res,
       type: type,
+      message: message,
     });
-    return uploaded;
   }
+  console.log(uploaded);
+  return uploaded;
 };
 
 const uploadToCloudinary = async (formData) => {

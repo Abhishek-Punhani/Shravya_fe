@@ -20,16 +20,17 @@ function HandleAndSend({ activeIndex, setActiveIndex, msg, socket }) {
     setLoading(true);
     // Upload Files
     const uploaded_files = await uploadFiles(files);
-    console.log(uploadFiles);
-    const values = {
-      token,
-      message: msg,
-      convo_id: activeConversation._id,
-      files: uploaded_files.length > 0 ? uploaded_files : [],
-    };
-    let newMsg = await dispatch(sendMessages(values));
-    console.log(newMsg);
-    socket.emit("new_message", newMsg);
+    for (const file of uploaded_files) {
+      let values = {
+        token,
+        message: file.message,
+        convo_id: activeConversation._id,
+        file: file,
+      };
+      let newMsg = await dispatch(sendMessages(values));
+      console.log(newMsg);
+      socket.emit("new_message", newMsg);
+    }
     setLoading(false);
   };
   const RemoveFileHandler = (index) => {

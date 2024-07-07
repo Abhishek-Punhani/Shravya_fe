@@ -10,7 +10,10 @@ import PhotoAttachment from "./photoAttachment";
 function Menu() {
   return (
     <>
-      <ul className=" absolute bottom-[60px] openEmojiAnimation dark:bg-dark_bg_3">
+      <ul
+        className=" absolute bottom-[60px] openEmojiAnimation dark:bg-dark_bg_3"
+        onClick={(e) => e.stopPropagation()}
+      >
         <li>
           <button type="button" className="btn mb-2">
             <PollIcon />

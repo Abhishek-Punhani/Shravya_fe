@@ -2,16 +2,46 @@ import moment from "moment";
 import TraingleIcon from "../../../../svg/triangle";
 import FileOther from "./fileOther";
 import { useSelector } from "react-redux";
+import { useRef, useState } from "react";
+import ContextMenu from "../ContextMenu";
 
-function FileMessage({ fileMessage, message, me }) {
+function FileMessage({
+  fileMessage,
+  message,
+  me,
+  show,
+  setShow,
+  setForward,
+  setReply,
+  setedt,
+}) {
   const { activeConversation } = useSelector((state) => state.chat);
   const { file, type } = fileMessage;
+  const messageRef = useRef(null);
+  const [contextMenuDirection, setContextMenuDirection] = useState("down");
+  const handleContextMenu = () => {
+    const messageBounds = messageRef.current.getBoundingClientRect();
+    const availableSpaceBelow = window.innerHeight - messageBounds.bottom;
+    const menuHeight = 210;
+    if (availableSpaceBelow < menuHeight) {
+      setContextMenuDirection("up");
+    } else {
+      setContextMenuDirection("down");
+    }
+    setShow(message._id);
+    console.log(message);
+  };
   return (
     <>
       <div
+        ref={messageRef}
         className={` w-full flex mt-2 space-x-3 max-w-xs ${
           me ? "ml-auto justify-end" : ""
         }`}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleContextMenu();
+        }}
       >
         {/* Message Conatiner */}
         <div className="relative">
@@ -51,6 +81,20 @@ function FileMessage({ fileMessage, message, me }) {
               </span>
             )}
           </div>
+          {/* Context Menu */}
+          {show === message._id && (
+            <ContextMenu
+              contextMenuDirection={contextMenuDirection}
+              show={show}
+              me={me}
+              message={message}
+              setedt={setedt}
+              setReply={setReply}
+              setShow={setShow}
+              setForward={setForward}
+              file={fileMessage}
+            />
+          )}
         </div>
       </div>
     </>

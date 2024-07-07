@@ -6,8 +6,9 @@ import { getCoversationMessages } from "../../features/chatSlice";
 import { ChatInput, EditMsgInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
+import ForwardMessage from "./forward Message/ForwardMessage";
 
-function ChatContainer({ onlineUsers, typing, callUser }) {
+function ChatContainer({ onlineUsers, typing }) {
   const dispatch = useDispatch();
   const { activeConversation, files } = useSelector((state) => state.chat);
 
@@ -26,19 +27,19 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
   const [showAttachments, setShowAttachments] = useState(false);
   const [edt, setedt] = useState(undefined);
   const [reply, setReply] = useState(undefined);
-  const [delMsg, setDelMsg] = useState(undefined);
   const [show, setShow] = useState(undefined);
+  const [forward, setForward] = useState(undefined);
   return (
     <>
       <div
-        className="relative h-full w-full  select-none border-l dark:border-l-dark_border_2 overflow-hidden"
+        className="relative h-full w-full flex flex-col  select-none border-l dark:border-l-dark_border_2 overflow-hidden"
         onClick={() => {
           setShow(false);
-          if (showAttachments) {
-            setShowAttachments(false);
-          }
           if (showPicker) {
             setShowPicker(false);
+          }
+          if (showAttachments && files.length == 0) {
+            setShowAttachments(false);
           }
         }}
       >
@@ -51,43 +52,50 @@ function ChatContainer({ onlineUsers, typing, callUser }) {
               : checkOnline(onlineUsers, user, activeConversation.users)
           }
         />
-        {files.length > 0 ? (
-          <>
-            {/* Files preview*/}
-            <FilesPreview />
-          </>
-        ) : (
-          <>
-            {/* Chat Messages */}
-            <ChatMessages
-              typing={typing}
-              setedt={setedt}
-              setReply={setReply}
-              reply={reply}
-              show={show}
-              setShow={setShow}
-            />
-            {/* Chat Inputs */}
-            {edt ? (
-              <EditMsgInput
-                showPicker={showPicker}
-                setShowPicker={setShowPicker}
-                showAttachments={showAttachments}
-                setShowAttachments={setShowAttachments}
-                edt={edt}
+        <div className="flex-1">
+          {files.length > 0 ? (
+            <>
+              {/* Files preview*/}
+              <FilesPreview />
+            </>
+          ) : (
+            <>
+              {/* Chat Messages */}
+              <ChatMessages
+                typing={typing}
                 setedt={setedt}
-              />
-            ) : (
-              <ChatInput
-                showPicker={showPicker}
-                setShowPicker={setShowPicker}
-                showAttachments={showAttachments}
-                setShowAttachments={setShowAttachments}
                 setReply={setReply}
                 reply={reply}
+                show={show}
+                setShow={setShow}
+                setForward={setForward}
               />
-            )}
-          </>
+              {/* Chat Inputs */}
+              {edt ? (
+                <EditMsgInput
+                  showPicker={showPicker}
+                  setShowPicker={setShowPicker}
+                  showAttachments={showAttachments}
+                  setShowAttachments={setShowAttachments}
+                  edt={edt}
+                  setedt={setedt}
+                />
+              ) : (
+                <ChatInput
+                  showPicker={showPicker}
+                  setShowPicker={setShowPicker}
+                  showAttachments={showAttachments}
+                  setShowAttachments={setShowAttachments}
+                  setReply={setReply}
+                  reply={reply}
+                />
+              )}
+            </>
+          )}
+        </div>
+        {/* Forward Message Container */}
+        {forward && (
+          <ForwardMessage setForward={setForward} forward={forward} />
         )}
       </div>
     </>

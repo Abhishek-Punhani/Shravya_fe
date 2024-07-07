@@ -14,15 +14,15 @@ function FileOther({ file, type }) {
             />
             <div className="flex flex-col gap-2">
               <h1 className=" inline-block">
-                {file.original_filename}.{file.public_id.split(".")[1]}
+                {file?.original_filename}.{file?.public_id.split(".")[1]}
               </h1>
               <span className=" text-xs">
-                {type} . {file.bytes} B
+                {type} . {file?.bytes} B
               </span>
             </div>
           </div>
           {/* Download Button */}
-          <a href={file.secure_url} target="_blank" download>
+          <a href={file?.secure_url} target="_blank" download>
             <DownloadIcon />
           </a>
         </div>

@@ -8,6 +8,7 @@ function SearchUsers({
   selectedUsers,
   setSelectedUsers,
   createGroupHandler,
+  scale,
 }) {
   const { user } = useSelector((state) => state.user);
   const { token } = user;
@@ -54,28 +55,41 @@ function SearchUsers({
         />
         {/* selected Users */}
         {selectedUsers.length > 0 ? (
-          <div className=" mt-3 flex items-center justify-start flex-wrap px-3">
+          <div className=" mt-6 flex items-center justify-start flex-wrap px-3">
             {selectedUsers.map((user) => (
               <>
-                <div className="w-[60px] h-[60px] flex flex-col items-center justify-center relative ">
+                <div
+                  className={`w-[60px] h-[60px] flex flex-col items-center justify-center relative ${
+                    scale && "w-[30px] h-[30px] mr-8"
+                  }`}
+                >
                   <div
                     className=" absolute bottom-[-1] right-0 cursor-pointer bg-[rgb(0,0,0,0.4)] w-fit h-fit"
                     onClick={() => removeUser(user)}
                   >
-                    <CloseIcon className="fill-dark_svg_1 w-5 h-5" />
+                    <CloseIcon
+                      className={`fill-dark_svg_1 w-5 h-5 ${
+                        scale && "w-3 h-3"
+                      }`}
+                    />
                   </div>
                   <div className=" flex flex-col items-center justify-center">
                     <img
                       src={user.picture}
                       alt=""
-                      className="w-12 h-12 rounded-full object-contain"
+                      className={`w-12 h-12 rounded-full object-contain ${
+                        scale && "w-8 h-8"
+                      }`}
                     />
-                    <h1 className="mt-1 text-[15px] font-light dark:text-dark_text_1">
+                    <h1
+                      className={`mt-1 text-[15px] font-light dark:text-dark_text_1 ${
+                        scale && "text-[11px]"
+                      }`}
+                    >
                       {user.name}
                     </h1>
                   </div>
                 </div>
-                ;
               </>
             ))}
           </div>
@@ -84,7 +98,11 @@ function SearchUsers({
         ) : null}
 
         {/* Create Group Button */}
-        <div className="mt-2 flex items-center justify-end">
+        <div
+          className={`flex items-center justify-end ${
+            selectedUsers.length > 0 ? "" : "hidden"
+          }`}
+        >
           <button className="btn bg-green_1 scale-75 hover:bg-green-500">
             {status === "loading" ? (
               <ClipLoader color="#E9EDEF" size={25} />

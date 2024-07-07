@@ -13,6 +13,7 @@ function ChatMessages({
   setDelMsg,
   show,
   setShow,
+  setForward,
 }) {
   const { user } = useSelector((state) => state.user);
   const { messages, activeConversation } = useSelector((state) => state.chat);
@@ -35,36 +36,22 @@ function ChatMessages({
       <div className="scrollbar overflow_scrollbar overflow-auto py-2 px-[4%]">
         {messages &&
           messages.map((message, i) => (
-            <React.Fragment key={message._id}>
-              {/* Message Files */}
-              {message.files.length > 0 &&
-                message.files.map((file) => (
-                  <FileMessage
-                    fileMessage={file}
-                    message={message}
-                    key={file?._id}
-                    me={user._id === message.sender._id}
-                  />
-                ))}
-              {/* Message text */}
-              {message?.message.length > 0 && (
-                <Message
-                  message={message}
-                  key={message._id}
-                  i={i}
-                  me={user._id === message.sender._id}
-                  setedt={setedt}
-                  setReply={setReply}
-                  setDelMsg={setDelMsg}
-                  show={show}
-                  setShow={setShow}
-                />
-              )}
-            </React.Fragment>
+            <Message
+              message={message}
+              key={message._id}
+              i={i}
+              me={user._id === message.sender._id}
+              setedt={setedt}
+              setReply={setReply}
+              setDelMsg={setDelMsg}
+              show={show}
+              setShow={setShow}
+              setForward={setForward}
+            />
           ))}
         {typing === activeConversation._id ? <Typing /> : null}
         <div
-          className={`mt-1 h-[0.01px] bg-none ${reply && "mt-9 h-5"}`}
+          className={`mt-1 h-[0.01px] bg-none bottom-0 ${reply && "mt-9 h-5"}`}
           ref={endRef}
         ></div>
       </div>

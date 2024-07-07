@@ -10,7 +10,7 @@ function Add({ setActiveIndex }) {
   const dispatch = useDispatch();
   useEffect(() => {
     setActiveIndex(files.length - 1);
-  }, [files]);
+  }, [files.length]);
   const filesHandler = (e) => {
     let files = Array.from(e.target.files);
     files.forEach((file) => {
@@ -57,6 +57,7 @@ function Add({ setActiveIndex }) {
           dispatch(
             addFiles({
               file: file,
+              message: "",
               fileData:
                 getFileType(file.type) === "IMAGE"
                   ? e.target.result

@@ -3,11 +3,20 @@ import TraingleIcon from "../../../svg/triangle";
 import { useSelector } from "react-redux";
 import { useState, useRef } from "react";
 import ContextMenu from "./ContextMenu";
+import FileOther from "./MessageFiles/fileOther";
 
-function Message({ message, me, i, setedt, setReply, show, setShow }) {
+function Message({
+  message,
+  me,
+  i,
+  setedt,
+  setReply,
+  show,
+  setShow,
+  setForward,
+}) {
   const { user } = useSelector((state) => state.user);
   const { activeConversation, messages } = useSelector((state) => state.chat);
-
   const messageRef = useRef(null);
   const [contextMenuDirection, setContextMenuDirection] = useState("down");
 
@@ -70,40 +79,86 @@ function Message({ message, me, i, setedt, setReply, show, setShow }) {
                 </div>
               )}
             {/* message */}
+            {/* Is Forwarded */}
+            {message?.isForwarded && (
+              <p className="text-dark_svg_2 text-[11px] ">Forwarded</p>
+            )}
             {/* Reply Container */}
             {message.isReply?.name.length > 0 && (
               <div
                 className={`min-h-[40px] ${
                   me ? "bg-[#1b4e49d4]" : "bg-[#2c3840]"
-                }`}
+                } flex items-center justify-between px-2`}
               >
-                <h3
-                  className={`text-purple-300 text-[13px] ml-1 block ${
-                    message.isReply?.id === user._id ? "text-yellow-200" : ""
-                  }`}
-                >
-                  {message.isReply?.id === user._id
-                    ? "You"
-                    : `${message.isReply?.name}`}
-                </h3>
-                <div className=" ml-[4px] w-full">
-                  <p className="text-[11px] dark:text-gray-200 mr-[2] break-words max-w-[85%] mb-2">
-                    {message.isReply?.message.length > 120
-                      ? `${message.isReply?.message.substring(0, 160)}...`
-                      : `${message.isReply?.message}`}
-                  </p>
+                <div className=" flex flex-col w-full">
+                  <h3
+                    className={`text-purple-300 text-[13px] ml-1 block ${
+                      message.isReply?.id === user._id ? "text-yellow-200" : ""
+                    }`}
+                  >
+                    {message.isReply?.id === user._id
+                      ? "You"
+                      : `${message.isReply?.name}`}
+                  </h3>
+                  <div className=" ml-[4px] w-full">
+                    <p className="text-[11px] dark:text-gray-200 mr-[2] break-words max-w-[85%] mb-2">
+                      {message.isReply?.message.length > 0
+                        ? message.isReply?.message.length > 120
+                          ? `${message.isReply?.message.substring(0, 160)}...`
+                          : `${message.isReply?.message}`
+                        : `${
+                            message.isReply?.file?.name > 60
+                              ? message.isReply?.file?.name.substring(0, 60)
+                              : message.isReply?.file?.name
+                          }`}
+                    </p>
+                  </div>
+                </div>
+                {/* Reply File */}
+                <div className="max-h-full">
+                  <img
+                    src={message.isReply?.file?.url}
+                    alt=""
+                    className="max-h-10"
+                  />
                 </div>
               </div>
             )}
+
             <div
-              className={`max-w-[18rem] float-left h-full text-sm pr-8 break-words pl-2 ${
-                message?.isEdited ? "pb-6" : "pb-4"
-              }`}
+              className={`max-w-[18rem] float-left h-full text-sm pr-8 break-words pl-2 pb-6 
+              } ${
+                message.file?.type.length > 0 && message.message.length == 0
+                  ? "pb-4 "
+                  : ""
+              } `}
             >
+              {message.file?.type.length > 0 && (
+                <p className="h-full text-sm select-none cursor-pointer ">
+                  {message?.file?.type === "IMAGE" ? (
+                    <img src={message?.file?.file?.secure_url} alt="" />
+                  ) : message?.file?.type === "VIDEO" ? (
+                    <video
+                      src={message?.file?.file?.data.secure_url}
+                      controls
+                      playsInline
+                    ></video>
+                  ) : (
+                    <FileOther
+                      file={message?.file?.file}
+                      type={message?.file?.type}
+                      message={message}
+                    />
+                  )}
+                </p>
+              )}
+
               {message.message}
             </div>
             {/* Message Date */}
-            <div className="absolute right-1.5 bottom-1.5 text-xxs text-dark_text_5 leading-none">
+            <div
+              className={`absolute right-1.5 text-xxs text-dark_text_5 leading-none bottom-1.5`}
+            >
               {message?.isEdited && "Edited  "}
               {moment(message.createdAt).format("HH:mm")}
             </div>
@@ -119,17 +174,21 @@ function Message({ message, me, i, setedt, setReply, show, setShow }) {
               />
             </span>
           </div>
+          {/* Context Menu */}
+          {show === message._id && (
+            <ContextMenu
+              contextMenuDirection={contextMenuDirection}
+              show={show}
+              me={me}
+              message={message}
+              setedt={setedt}
+              setReply={setReply}
+              setShow={setShow}
+              setForward={setForward}
+              file={message.file?.type.length > 0}
+            />
+          )}
         </div>
-        {/* Context Menu */}
-        <ContextMenu
-          contextMenuDirection={contextMenuDirection}
-          show={show}
-          me={me}
-          message={message}
-          setedt={setedt}
-          setReply={setReply}
-          setShow={setShow}
-        />
       </div>
     </>
   );

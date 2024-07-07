@@ -37,6 +37,7 @@ function PhotoAttachment() {
           dispatch(
             addFiles({
               file: file,
+              message: "",
               fileData: e.target.result,
               type: getFileType(file.type),
             })

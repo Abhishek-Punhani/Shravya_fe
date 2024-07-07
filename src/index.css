@@ -3,18 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  img,
-  video {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10+ and Edge */
-    user-select: none; /* Standard syntax */
-    -webkit-touch-callout: none; /* Disable the callout on touch devices */
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    -o-user-drag: none;
-  }
-
   .container {
     width: calc(100% - 38px);
     max-width: 1600px;
