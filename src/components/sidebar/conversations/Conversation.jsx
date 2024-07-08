@@ -10,8 +10,9 @@ import { capitalize } from "../../../utils/string";
 import SocketContext from "../../../contexts/SocketContext";
 import { DocumentIcon, PhotoIcon } from "../../../svg";
 import { getDocumentName, isImgVid } from "../../../utils/lastDocumentName";
+import ConvoContextMenu from "./ConvoContextMenu";
 
-function Conversation({ convo, socket, online, typing }) {
+function Conversation({ convo, socket, online, typing, show, setShow }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { activeConversation } = useSelector((state) => state.chat);
@@ -25,14 +26,17 @@ function Conversation({ convo, socket, online, typing }) {
     let newConvo = await dispatch(create_open_conversation(values));
     socket.emit("join_conversation", newConvo.payload._id);
   };
-
   return (
     <li
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setShow(convo._id);
+      }}
       onClick={() => openConversation()}
-      className={`list-none h-[72px] w-full dark:bg-dark_bg_1 ${
-        convo._id === activeConversation._id ? " " : "dark:hover:bg-dark_bg_2"
+      className={`relative list-none h-[72px] w-full dark:bg-dark_bg_1 ${
+        convo._id === activeConversation?._id ? " " : "dark:hover:bg-dark_bg_2"
       } cursor-pointer dark:text-dark_text_1 px-[10px] ${
-        convo._id === activeConversation._id ? "dark:bg-dark_hover_1" : ""
+        convo._id === activeConversation?._id ? "dark:bg-dark_hover_1" : ""
       }`}
     >
       {/* Container */}
@@ -80,7 +84,7 @@ function Conversation({ convo, socket, online, typing }) {
                           {`${convo?.latestMessage?.sender?.name} :  `}
                         </span>
                       )}
-                      {convo?.latestMessage?.message?.length > 25
+                      {convo?.latestMessage?.message.length > 25
                         ? `${convo.latestMessage?.message.substring(0, 25)}...`
                         : convo.latestMessage?.message}
                     </p>
@@ -109,6 +113,10 @@ function Conversation({ convo, socket, online, typing }) {
               : ""}
           </span>
         </div>
+        {/* context menu */}
+        {show === convo._id && (
+          <ConvoContextMenu setShow={setShow} show={show} />
+        )}
       </div>
       {/* Border */}
       <div className="ml-16 border-b dark:border-b-dark_border_1"></div>

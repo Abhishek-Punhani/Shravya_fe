@@ -3,7 +3,7 @@ import Conversation from "./Conversation";
 import { useEffect } from "react";
 import { checkOnline } from "../../../utils/chat";
 
-function Conversations({ onlineUsers, typing }) {
+function Conversations({ onlineUsers, typing, show, setShow }) {
   const { user } = useSelector((state) => state.user);
   const { conversations, activeConversation } = useSelector(
     (state) => state.chat
@@ -23,6 +23,8 @@ function Conversations({ onlineUsers, typing }) {
             .map((convo) => {
               return (
                 <Conversation
+                  show={show}
+                  setShow={setShow}
                   convo={convo}
                   key={convo._id}
                   online={

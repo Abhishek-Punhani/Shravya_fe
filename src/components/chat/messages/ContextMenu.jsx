@@ -36,7 +36,10 @@ export function ContextMenu({
 
   const handleDeleteMsg = async () => {
     let lastMessage = undefined;
-    if (activeConversation.latestMessage._id === message._id) {
+    if (
+      !activeConversation.latestMessage ||
+      activeConversation?.latestMessage?._id === message._id
+    ) {
       lastMessage = messages[messages.length - 2];
     }
     const values = {

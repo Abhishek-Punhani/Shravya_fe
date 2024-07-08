@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from "react";
 import Message from "./Message";
 import { useSelector } from "react-redux";
 import Typing from "./typing";
-import FileMessage from "./MessageFiles/FileMessage";
 
 function ChatMessages({
   typing,

@@ -197,10 +197,29 @@ export const deleteMessage = createAsyncThunk(
           },
         }
       );
-      console.log(data);
       return data;
     } catch (error) {
       console.log(error);
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+export const deleteConversation = createAsyncThunk(
+  "DeleteConversation",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { id, token } = values;
+      const { data } = await axios.post(
+        `${CONVERSATION_ENDPOINT}/delete`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return data;
+    } catch (error) {
       return rejectWithValue(error.response.data.error.message);
     }
   }
@@ -416,6 +435,25 @@ export const chatSlice = createSlice({
         state.error = "";
       })
       .addCase(deleteMessage.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(deleteConversation.pending, (state, action) => {
+        state.status = "pending";
+      })
+      .addCase(deleteConversation.fulfilled, (state, action) => {
+        state.status = "suceeded";
+        let conversations = [...state.conversations];
+        conversations = conversations.filter(
+          (convo) => convo._id !== action.payload._id
+        );
+        state.conversations = [...conversations];
+        if (state.activeConversation._id === action.payload._id) {
+          state.activeConversation = undefined;
+        }
+        state.error = "";
+      })
+      .addCase(deleteConversation.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

@@ -22,6 +22,8 @@ function Home({ socket }) {
     (state) => state.chat
   );
   const [totalSecInCall, setTotalSecInCall] = useState(0);
+  const [show, setShow] = useState(undefined);
+  const [showMenu, setShowMenu] = useState(false);
   // join event for socket io
   //join user into the socket io
   useEffect(() => {
@@ -77,13 +79,30 @@ function Home({ socket }) {
 
   return (
     <>
-      <div className="h-screen dark:bg-dark_bg_1 flex items-center justify-center">
+      <div
+        className="h-screen dark:bg-dark_bg_1 flex items-center justify-center"
+        onClick={() => {
+          if (show) {
+            setShow(false);
+          }
+          if (showMenu) {
+            setShowMenu(false);
+          }
+        }}
+      >
         {/* container */}
         <div className="container h-screen flex py-[10px]">
           {/* Sidebar */}
-          <Sidebar onlineUsers={onlineUsers} typing={typing} />
+          <Sidebar
+            onlineUsers={onlineUsers}
+            typing={typing}
+            show={show}
+            setShow={setShow}
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+          />
           {/* Main Chat Component */}
-          {activeConversation?._id ? (
+          {activeConversation && activeConversation?._id ? (
             <ChatContainer onlineUsers={onlineUsers} typing={typing} />
           ) : (
             <WelcomeHome />

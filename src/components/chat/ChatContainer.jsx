@@ -56,7 +56,11 @@ function ChatContainer({ onlineUsers, typing }) {
           {files.length > 0 ? (
             <>
               {/* Files preview*/}
-              <FilesPreview />
+              <FilesPreview
+                showPicker={showPicker}
+                setShowPicker={setShowPicker}
+                setShowAttachments={setShowAttachments}
+              />
             </>
           ) : (
             <>

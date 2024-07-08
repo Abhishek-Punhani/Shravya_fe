@@ -28,8 +28,7 @@ function HandleAndSend({ activeIndex, setActiveIndex, msg, socket }) {
         file: file,
       };
       let newMsg = await dispatch(sendMessages(values));
-      console.log(newMsg);
-      socket.emit("new_message", newMsg);
+      socket.emit("new_message", newMsg.payload);
     }
     setLoading(false);
   };

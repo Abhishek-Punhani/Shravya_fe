@@ -3,6 +3,7 @@ import SocketContext from "../../../contexts/SocketContext";
 import { useState, useRef, useEffect } from "react";
 
 function Input({ msg, setMsg, textRef, socket, reply }) {
+  const { user } = useSelector((state) => state.user);
   const { activeConversation } = useSelector((state) => state.chat);
   const [typing, setTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
@@ -20,7 +21,7 @@ function Input({ msg, setMsg, textRef, socket, reply }) {
 
     if (!typing && e.target.value !== "") {
       setTyping(true);
-      socket.emit("typing", activeConversation._id);
+      socket.emit("typing", { convo: activeConversation, id: user._id });
     }
 
     if (typingTimeoutRef.current) {
@@ -28,7 +29,7 @@ function Input({ msg, setMsg, textRef, socket, reply }) {
     }
 
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit("stop_typing", activeConversation._id);
+      socket.emit("stop_typing", { convo: activeConversation, id: user._id });
       setTyping(false);
     }, 1500);
   };

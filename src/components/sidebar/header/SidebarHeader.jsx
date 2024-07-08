@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 import { ChatIcon, CommunityIcon, DotsIcon, StoryIcon } from "../../../svg";
 import Menu from "./Menu";
 import CreateGroup from "./groupChats/CreateGroup";
-function SidebarHeader() {
+function SidebarHeader({ showMenu, setShowMenu }) {
   const { user } = useSelector((state) => state.user);
-  const [showMenu, setShowMenu] = useState(false);
+
   const [show, setShow] = useState(false);
   return (
     <>

@@ -9,6 +9,7 @@ function EmojiPickerApp({
   showPicker,
   setShowPicker,
   setShowAttachments,
+  offset,
 }) {
   const [cursorPosition, setCursorPosition] = useState();
   useEffect(() => {
@@ -28,7 +29,7 @@ function EmojiPickerApp({
 
   return (
     <>
-      <li className="w-full">
+      <li className="w-full flex items-center justify-center">
         <button
           className="btn"
           type="button"
@@ -46,7 +47,11 @@ function EmojiPickerApp({
         </button>
         {/* Emoji picker */}
         {showPicker && (
-          <div className="openEmojiAnimation w-[50%]  flex flex-col justify-start absolute bottom-[60px] left-[-0.5px]">
+          <div
+            className={`openEmojiAnimation w-[50%]  flex flex-col justify-start absolute bottom-[60px] left-[-0.5px] ${
+              offset ? " bottom-[170px]" : ""
+            }`}
+          >
             <EmojiPicker
               theme="dark"
               onEmojiClick={handleEmoji}

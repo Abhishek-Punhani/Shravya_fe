@@ -4,12 +4,19 @@ import { Notifications } from "./notifications";
 import { SearchResults, Searchbar } from "./searchbar";
 import { Conversations } from "./conversations";
 
-function Sidebar({ onlineUsers, typing }) {
+function Sidebar({
+  onlineUsers,
+  typing,
+  show,
+  setShow,
+  showMenu,
+  setShowMenu,
+}) {
   const [searchResults, setSearchResults] = useState([]);
   return (
     <div className="flex0030 max-w-[30%] h-full select-none overflow-hidden">
       {/* Sidebar Header */}
-      <SidebarHeader />
+      <SidebarHeader showMenu={showMenu} setShowMenu={setShowMenu} />
       {/* Notifications */}
       <Notifications />
       {/* Searchbar */}
@@ -29,7 +36,12 @@ function Sidebar({ onlineUsers, typing }) {
       ) : (
         <>
           {/* Conversations */}
-          <Conversations onlineUsers={onlineUsers} typing={typing} />
+          <Conversations
+            onlineUsers={onlineUsers}
+            typing={typing}
+            show={show}
+            setShow={setShow}
+          />
         </>
       )}
     </div>

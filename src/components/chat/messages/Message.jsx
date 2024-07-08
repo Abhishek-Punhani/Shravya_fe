@@ -66,7 +66,7 @@ function Message({
             {activeConversation.isGroup &&
               (i === 0 ||
                 messages[i - 1].sender._id !== message.sender._id) && (
-                <div>
+                <div className="p-1">
                   <h3
                     className={`text-purple-300 text-[13px] ${
                       message.sender._id === user._id ? "text-yellow-200" : ""
@@ -98,6 +98,8 @@ function Message({
                   >
                     {message.isReply?.id === user._id
                       ? "You"
+                      : activeConversation.isGroup
+                      ? `${message.isReply?.name.split("|")[0]}`
                       : `${message.isReply?.name}`}
                   </h3>
                   <div className=" ml-[4px] w-full">
@@ -126,11 +128,11 @@ function Message({
             )}
 
             <div
-              className={`max-w-[18rem] float-left h-full text-sm pr-8 break-words pl-2 pb-6 
+              className={`max-w-[18rem] float-left h-fit text-sm  pt-2 break-words pl-2 pb-6 
               } ${
                 message.file?.type.length > 0 && message.message.length == 0
-                  ? "pb-4 "
-                  : ""
+                  ? "pb-4 pr-2 "
+                  : "pr-6"
               } `}
             >
               {message.file?.type.length > 0 && (
@@ -139,7 +141,7 @@ function Message({
                     <img src={message?.file?.file?.secure_url} alt="" />
                   ) : message?.file?.type === "VIDEO" ? (
                     <video
-                      src={message?.file?.file?.data.secure_url}
+                      src={message?.file?.file?.secure_url}
                       controls
                       playsInline
                     ></video>
@@ -153,7 +155,16 @@ function Message({
                 </p>
               )}
 
-              {message.message}
+              <p
+                className={`${
+                  message.file?.type.length > 0 && activeConversation.isGroup
+                    ? "mt-3"
+                    : ""
+                }`}
+              >
+                {" "}
+                {message.message}
+              </p>
             </div>
             {/* Message Date */}
             <div

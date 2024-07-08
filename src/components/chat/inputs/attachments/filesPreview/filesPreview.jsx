@@ -5,8 +5,7 @@ import Input from "./input";
 import HandleAndSend from "./handleAndSend";
 import { useSelector } from "react-redux";
 
-function FilesPreview() {
-  const { files } = useSelector((state) => state.chat);
+function FilesPreview({ showPicker, setShowPicker, setShowAttachments }) {
   const [msg, setMsg] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const message = [];
@@ -24,6 +23,9 @@ function FilesPreview() {
           setMsg={setMsg}
           activeIndex={activeIndex}
           message={message}
+          showPicker={showPicker}
+          setShowPicker={setShowPicker}
+          setShowAttachments={setShowAttachments}
         />
         {/* send and manipulate added files */}
         <HandleAndSend
