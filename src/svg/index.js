@@ -35,8 +35,14 @@ import DialIcon from "./Dial";
 import VideoDialIcon from "./vedioDial";
 import TickIcon from "./tick";
 import CrossIcon from "./cross";
+import MicIcon from "./Mic";
+import PlayIcon from "./play";
+import PauseIcon from "./pause";
 
 export {
+  PlayIcon,
+  PauseIcon,
+  MicIcon,
   TickIcon,
   CrossIcon,
   VideoDialIcon,

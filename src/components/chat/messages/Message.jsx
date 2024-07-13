@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useState, useRef } from "react";
 import ContextMenu from "./ContextMenu";
 import FileOther from "./MessageFiles/fileOther";
+import VoiceMessage from "./MessageFiles/voiceMessage";
 
 function Message({
   message,
@@ -23,6 +24,7 @@ function Message({
   const handleContextMenu = () => {
     const messageBounds = messageRef.current.getBoundingClientRect();
     const availableSpaceBelow = window.innerHeight - messageBounds.bottom;
+    console.log(availableSpaceBelow);
     const menuHeight = 210;
     if (availableSpaceBelow < menuHeight) {
       setContextMenuDirection("up");
@@ -35,6 +37,7 @@ function Message({
   return (
     <>
       <div
+        id={`${message._id}`}
         ref={messageRef}
         className={`relative flex mt-2 w-fit space-x-3 max-w-[20rem] h-fit ${
           me ? "ml-auto justify-end" : ""
@@ -145,6 +148,8 @@ function Message({
                       controls
                       playsInline
                     ></video>
+                  ) : message?.file?.type === "AUDIO" ? (
+                    <VoiceMessage message={message} />
                   ) : (
                     <FileOther
                       file={message?.file?.file}
@@ -197,6 +202,7 @@ function Message({
               setShow={setShow}
               setForward={setForward}
               file={message.file?.type.length > 0}
+              messageBounds={messageRef.current.getBoundingClientRect()}
             />
           )}
         </div>

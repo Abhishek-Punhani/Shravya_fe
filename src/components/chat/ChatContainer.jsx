@@ -7,6 +7,7 @@ import { ChatInput, EditMsgInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 import ForwardMessage from "./forward Message/ForwardMessage";
+import AudioRecorder from "./inputs/AudioRecorder";
 
 function ChatContainer({ onlineUsers, typing }) {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ function ChatContainer({ onlineUsers, typing }) {
   const [reply, setReply] = useState(undefined);
   const [show, setShow] = useState(undefined);
   const [forward, setForward] = useState(undefined);
+  const [showAudioRec, setShowAudioRec] = useState(false);
   return (
     <>
       <div
@@ -84,6 +86,8 @@ function ChatContainer({ onlineUsers, typing }) {
                   edt={edt}
                   setedt={setedt}
                 />
+              ) : showAudioRec ? (
+                <AudioRecorder setShowAudioRec={setShowAudioRec} />
               ) : (
                 <ChatInput
                   showPicker={showPicker}
@@ -92,6 +96,8 @@ function ChatContainer({ onlineUsers, typing }) {
                   setShowAttachments={setShowAttachments}
                   setReply={setReply}
                   reply={reply}
+                  showAudioRec={showAudioRec}
+                  setShowAudioRec={setShowAudioRec}
                 />
               )}
             </>

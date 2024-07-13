@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CrossIcon, SendIcon } from "../../../svg";
+import { CrossIcon, MicIcon, SendIcon } from "../../../svg";
 import Attachments from "./attachments/Attachments";
 import EmojiPickerApp from "./EmojiPicker";
 import Input from "./Input";
@@ -16,6 +16,7 @@ function ChatInput({
   socket,
   reply,
   setReply,
+  setShowAudioRec,
 }) {
   const dispatch = useDispatch();
   const [msg, setMsg] = useState("");
@@ -152,6 +153,16 @@ function ChatInput({
           </ul>
           {/* Input */}
           <Input msg={msg} setMsg={setMsg} textRef={textRef} reply={reply} />
+          {/* Mic Icon */}
+          {msg.trim().length === 0 ? (
+            <button
+              className="btn"
+              type="button"
+              onClick={() => setShowAudioRec(true)}
+            >
+              <MicIcon className="dark:fill-dark_svg_1 scale-75  hover:bg-dark_hover_1 cursor-pointer" />
+            </button>
+          ) : null}
           {/* send icon */}
           <button className="btn" type="submit">
             {status === "loading" && loading ? (

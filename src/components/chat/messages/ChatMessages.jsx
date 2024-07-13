@@ -20,7 +20,7 @@ function ChatMessages({
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       scrollToBottom();
-    }, 100); // Adding a slight delay
+    }, 300); // Adding a slight delay
     return () => clearTimeout(timeoutId);
   }, [messages, typing, reply]);
   const scrollToBottom = () => {

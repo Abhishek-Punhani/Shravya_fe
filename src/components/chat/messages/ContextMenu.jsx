@@ -8,7 +8,7 @@ import SocketContext from "../../../contexts/SocketContext";
 export function ContextMenu({
   contextMenuDirection,
   me,
-  show,
+  messageBounds,
   message,
   setedt,
   setReply,
@@ -53,20 +53,19 @@ export function ContextMenu({
 
   const contextMenuPosition = () => {
     const basePosition = me ? "left-[-153px]" : "right-[-153px]";
-    const verticalPosition = contextMenuDirection === "down" ? "bottom" : "top";
     const distance = me
       ? file
-        ? "bottom-[-45px]"
+        ? `${messageBounds.height > 210 ? "bottom-[45px]" : "bottom-[-52px]"}`
         : "bottom-[-192px]"
       : file
-      ? "bottom-[-45px]"
+      ? "bottom-[45px]"
       : "bottom-[-152px]";
     const verticalDistance = me
       ? file
-        ? "top-[-52px]"
+        ? `${messageBounds.height > 210 ? "top-[45px]" : "top-[-52px]"}`
         : "top-[-182px]"
       : file
-      ? "top-[-50px]"
+      ? "top-[50px]"
       : "top-[-122px]";
     return `${basePosition} ${
       contextMenuDirection === "down" ? distance : verticalDistance

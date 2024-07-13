@@ -1,4 +1,5 @@
 import { DownloadIcon } from "../../../../svg";
+import { capitalize } from "../../../../utils/string";
 function FileOther({ file, type }) {
   return (
     <>
@@ -17,7 +18,7 @@ function FileOther({ file, type }) {
                 {file?.original_filename}.{file?.public_id.split(".")[1]}
               </h1>
               <span className=" text-xs">
-                {type} . {file?.bytes} B
+                {capitalize(type?.toLowerCase())} . {file?.bytes} B
               </span>
             </div>
           </div>

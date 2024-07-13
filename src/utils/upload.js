@@ -17,11 +17,10 @@ export const uploadFiles = async (files) => {
       message: message,
     });
   }
-  console.log(uploaded);
   return uploaded;
 };
 
-const uploadToCloudinary = async (formData) => {
+export const uploadToCloudinary = async (formData) => {
   return new Promise(async (resolve) => {
     return await axios
       .post(
