@@ -12,7 +12,7 @@ import {
   getConversationUser,
 } from "../../../utils/chat";
 import { setCall } from "../../../features/chatSlice";
-function ChatHeader({ online }) {
+function ChatHeader({ online, setShowChatInfos }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { activeConversation } = useSelector((state) => state.chat);
@@ -33,7 +33,10 @@ function ChatHeader({ online }) {
         {/* Container */}
         <div className=" w-full flex items-center justify-between">
           {/* Left */}
-          <div className="flex items-center gap-x-4">
+          <div
+            className="flex items-center gap-x-4 cursor-pointer w-full"
+            onClick={() => setShowChatInfos(true)}
+          >
             {/* Conversation Image */}
             <button className="btn">
               <img

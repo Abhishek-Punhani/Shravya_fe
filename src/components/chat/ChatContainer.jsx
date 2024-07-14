@@ -8,6 +8,7 @@ import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 import ForwardMessage from "./forward Message/ForwardMessage";
 import AudioRecorder from "./inputs/AudioRecorder";
+import ChatInfos from "./chatInfos/chatInfos";
 
 function ChatContainer({ onlineUsers, typing }) {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ function ChatContainer({ onlineUsers, typing }) {
   const [show, setShow] = useState(undefined);
   const [forward, setForward] = useState(undefined);
   const [showAudioRec, setShowAudioRec] = useState(false);
+  const [showChatInfos, setShowChatInfos] = useState(false);
   return (
     <>
       <div
@@ -48,6 +50,7 @@ function ChatContainer({ onlineUsers, typing }) {
         {/* Chat Header */}
 
         <ChatHeader
+          setShowChatInfos={setShowChatInfos}
           online={
             activeConversation.isGroup
               ? false
@@ -106,6 +109,18 @@ function ChatContainer({ onlineUsers, typing }) {
         {/* Forward Message Container */}
         {forward && (
           <ForwardMessage setForward={setForward} forward={forward} />
+        )}
+        {/* Chat Infos */}
+        {showChatInfos && (
+          <ChatInfos
+            online={
+              activeConversation.isGroup
+                ? false
+                : checkOnline(onlineUsers, user, activeConversation.users)
+            }
+            setShowChatInfos={setShowChatInfos}
+            convo={activeConversation}
+          />
         )}
       </div>
     </>
