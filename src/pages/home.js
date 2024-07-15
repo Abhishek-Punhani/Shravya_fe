@@ -14,6 +14,8 @@ import SocketContext from "../contexts/SocketContext";
 import Call from "../components/chat/call/Call";
 
 function Home({ socket }) {
+  const [showPicker, setShowPicker] = useState(false);
+  const [showAttachments, setShowAttachments] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [typing, setTyping] = useState({});
   const dispatch = useDispatch();
@@ -88,6 +90,9 @@ function Home({ socket }) {
           if (showMenu) {
             setShowMenu(false);
           }
+          if (showPicker) {
+            setShowPicker(false);
+          }
         }}
       >
         {/* container */}
@@ -100,10 +105,19 @@ function Home({ socket }) {
             setShow={setShow}
             showMenu={showMenu}
             setShowMenu={setShowMenu}
+            showPicker={showPicker}
+            setShowPicker={setShowPicker}
           />
           {/* Main Chat Component */}
           {activeConversation && activeConversation?._id ? (
-            <ChatContainer onlineUsers={onlineUsers} typing={typing} />
+            <ChatContainer
+              onlineUsers={onlineUsers}
+              typing={typing}
+              showPicker={showPicker}
+              showAttachments={showAttachments}
+              setShowPicker={setShowPicker}
+              setShowAttachments={setShowAttachments}
+            />
           ) : (
             <WelcomeHome />
           )}

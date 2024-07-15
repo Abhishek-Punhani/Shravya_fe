@@ -5,18 +5,26 @@ import AuthInput from "./authInput";
 import { PulseLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { changeStatus, registerUser } from "../../features/userSlice";
+import {
+  changeStatus,
+  googleLogin,
+  registerUser,
+} from "../../features/userSlice";
 import { useState } from "react";
 import Picture from "./Picture";
 import axios from "axios";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function RegisterForm() {
   const cloud_name = process.env.REACT_APP_CLOUD_NAME;
   const cloud_secret = process.env.REACT_APP_CLOUD_SECRET;
+  const clientid = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   const [picture, setPicture] = useState();
   const [readablePicture, setReadablePicture] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { status, error } = useSelector((state) => state.user);
   const {
     register,
@@ -46,6 +54,7 @@ export default function RegisterForm() {
       }
     }
   };
+
   const uploadImage = async () => {
     let formData = new FormData();
     formData.append("upload_preset", cloud_secret);
@@ -56,6 +65,11 @@ export default function RegisterForm() {
     );
     return data;
   };
+
+  const handleLogin = async (user) => {
+    await dispatch(googleLogin(user));
+  };
+
   return (
     <div className="w-full max-h-max flex items-center justify-center ">
       {/* Container */}
@@ -126,12 +140,32 @@ export default function RegisterForm() {
         <p className="flex flex-col items-center justify-center text-center mt-10 text-md dark:text-dark_text_1">
           <span>Already have an account?</span>
           <Link
-            href="/login"
+            to="/register"
             className="hover:underline cursor-pointer transition ease-in duration-300"
           >
             SignIn
           </Link>
         </p>
+        {/* Google login button */}
+        <div className="w-full flex items-center justify-center">
+          <GoogleOAuthProvider clientId={clientid}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                let decode = jwtDecode(credentialResponse.credential);
+                let user = {
+                  name: decode.name,
+                  email: decode.email,
+                  picture: decode.picture,
+                  password: decode.sub.toString() + "S@",
+                };
+                handleLogin(user);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </GoogleOAuthProvider>
+        </div>
       </div>
     </div>
   );

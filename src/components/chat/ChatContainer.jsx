@@ -10,7 +10,14 @@ import ForwardMessage from "./forward Message/ForwardMessage";
 import AudioRecorder from "./inputs/AudioRecorder";
 import ChatInfos from "./chatInfos/chatInfos";
 
-function ChatContainer({ onlineUsers, typing }) {
+function ChatContainer({
+  onlineUsers,
+  typing,
+  showPicker,
+  showAttachments,
+  setShowAttachments,
+  setShowPicker,
+}) {
   const dispatch = useDispatch();
   const { activeConversation, files } = useSelector((state) => state.chat);
 
@@ -25,8 +32,7 @@ function ChatContainer({ onlineUsers, typing }) {
       dispatch(getCoversationMessages(values));
     }
   }, [activeConversation]);
-  const [showPicker, setShowPicker] = useState(false);
-  const [showAttachments, setShowAttachments] = useState(false);
+
   const [edt, setedt] = useState(undefined);
   const [reply, setReply] = useState(undefined);
   const [show, setShow] = useState(undefined);

@@ -32,7 +32,7 @@ function ChatInfos({ setShowChatInfos, convo, online }) {
   });
 
   return (
-    <div className="absolute top-0 right-0 h-full w-full flex flex-col select-none border-l bg-dark_bg_2 dark:border-l-dark_border_2 overflow-hidden z-[1000]">
+    <div className="absolute top-0 right-0 h-full w-full flex flex-col select-none border-l bg-dark_bg_2 dark:border-l-dark_border_2  z-[1000] scrollbar">
       {/* Container */}
       <div className="w-full flex flex-col items-start px-4">
         {/* return button and convo name and picture */}
@@ -95,40 +95,44 @@ function ChatInfos({ setShowChatInfos, convo, online }) {
               {convo.users.length} Members
             </h3>
             {/* Members */}
-            <ul className="convos scrollbar w-full py-5 px-4 h-fit space-y-4">
-              {sortedUsers.map((convoUser) => {
-                return (
-                  <li
-                    key={convoUser._id}
-                    className="flex items-center justify-start gap-x-4 w-full h-[60px] dark:bg-gray-800 rounded-3xl p-4 cursor-pointer"
-                    onClick={() => openConvo(convoUser)}
-                  >
-                    {/* Image */}
-                    <div className="rounded-full">
-                      <img
-                        src={convoUser.picture}
-                        alt=""
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    </div>
-                    {/* Name and status */}
-                    <div className="flex flex-col items-start justify-center">
-                      <h3 className="text-[16px] dark:text-white pl-5">
-                        {convoUser._id === user._id ? "You" : convoUser.name}
-                      </h3>
-                      <span className="text-[12px] dark:text-dark_svg_2 pl-5">
-                        {convoUser.status}
+            <div className="w-full py-2 convos scrollbar">
+              <ul className="convos scrollbar w-full py-5 px-4 h-fit space-y-4">
+                {sortedUsers.map((convoUser) => {
+                  return (
+                    <li
+                      key={convoUser._id}
+                      className="flex items-center justify-start gap-x-4 w-full h-[60px] dark:bg-gray-800 rounded-3xl p-4 cursor-pointer"
+                      onClick={() => openConvo(convoUser)}
+                    >
+                      {/* Image */}
+                      <div className="rounded-full">
+                        <img
+                          src={convoUser.picture}
+                          alt=""
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      </div>
+                      {/* Name and status */}
+                      <div className="flex flex-col items-start justify-center">
+                        <h3 className="text-[16px] dark:text-white pl-5">
+                          {convoUser._id === user._id ? "You" : convoUser.name}
+                        </h3>
+                        <span className="text-[12px] dark:text-dark_svg_2 pl-5">
+                          {convoUser.status}
+                        </span>
+                      </div>
+                      <span className="text-dark_svg_1 text-[10px] mt-3 ml-auto mr-7">
+                        {convo.admin.find(
+                          (admin) => admin._id === convoUser._id
+                        )
+                          ? "Admin"
+                          : null}
                       </span>
-                    </div>
-                    <span className="text-dark_svg_1 text-[10px] mt-3 ml-auto mr-7">
-                      {convo.admin.find((admin) => admin._id === convoUser._id)
-                        ? "Admin"
-                        : null}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         ) : null}
       </div>

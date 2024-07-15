@@ -5,11 +5,14 @@ import AuthInput from "./authInput";
 import { PulseLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../features/userSlice";
+import { googleLogin, loginUser } from "../../features/userSlice";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const clientid = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   const { status, error } = useSelector((state) => state.user);
   const {
     register,
@@ -27,7 +30,9 @@ export default function LoginForm() {
       navigate("/");
     }
   };
-
+  const handleLogin = async (user) => {
+    await dispatch(googleLogin(user));
+  };
   return (
     <div className="w-full max-h-max flex items-center justify-center ">
       {/* Container */}
@@ -77,12 +82,33 @@ export default function LoginForm() {
         <p className="flex flex-col items-center justify-center text-center mt-10 text-md dark:text-dark_text_1">
           <span>New to Shravya</span>
           <Link
-            href="/register"
+            to="/register"
             className="hover:underline cursor-pointer transition ease-in duration-300"
           >
             SignUp
           </Link>
         </p>
+        {/* Google login button */}
+        <div className="w-full flex items-center justify-center">
+          <GoogleOAuthProvider clientId={clientid}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                let decode = jwtDecode(credentialResponse.credential);
+                let user = {
+                  name: decode.name,
+                  email: decode.email,
+                  picture: decode.picture,
+                  googleId: decode.sub.toString(),
+                  password: decode.sub.toString() + "S@",
+                };
+                handleLogin(user);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </GoogleOAuthProvider>
+        </div>
       </div>
     </div>
   );

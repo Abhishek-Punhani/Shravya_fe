@@ -84,19 +84,23 @@ function Conversation({ convo, socket, online, typing, show, setShow }) {
                           {`${convo?.latestMessage?.sender?.name} :  `}
                         </span>
                       )}
-                      {convo?.latestMessage?.message.length > 25
+                      {convo?.latestMessage
+                        ? ""
+                        : convo?.latestMessage?.message.length > 25
                         ? `${convo.latestMessage?.message.substring(0, 25)}...`
                         : convo.latestMessage?.message}
                     </p>
                   ) : (
                     <p className="font-bold flex items-start">
-                      <span className="flex items-start justify-start mb-3">
-                        {isImgVid(convo) ? (
-                          <PhotoIcon size={30} />
-                        ) : (
-                          <DocumentIcon size={30} />
-                        )}
-                      </span>
+                      {convo?.latestMessage && (
+                        <span className="flex items-start justify-start mb-3">
+                          {isImgVid(convo) ? (
+                            <PhotoIcon size={30} />
+                          ) : (
+                            <DocumentIcon size={30} />
+                          )}
+                        </span>
+                      )}
                       {getDocumentName(convo)}
                     </p>
                   )}

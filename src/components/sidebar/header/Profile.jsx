@@ -51,8 +51,8 @@ function Profile({ setShowProfile }) {
   };
   const handleupdateProfile = async () => {
     let updatedUser = { ...initUser };
+    setLoading(true);
     if (picture) {
-      setLoading(true);
       let formData = new FormData();
       formData.append("upload_preset", cloud_secret);
       formData.append("file", picture);
@@ -61,7 +61,6 @@ function Profile({ setShowProfile }) {
         formData
       );
       updatedUser = { ...updatedUser, picture: data.secure_url };
-      setLoading(false);
     }
 
     const values = {
@@ -74,6 +73,7 @@ function Profile({ setShowProfile }) {
       },
     };
     await dispatch(updateUserInfo(values));
+    setLoading(false);
     setShowProfile(false);
   };
   return (

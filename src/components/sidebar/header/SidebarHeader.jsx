@@ -4,7 +4,7 @@ import { ChatIcon, CommunityIcon, DotsIcon, StoryIcon } from "../../../svg";
 import Menu from "./Menu";
 import CreateGroup from "./groupChats/CreateGroup";
 import Profile from "./Profile";
-function SidebarHeader({ showMenu, setShowMenu }) {
+function SidebarHeader({ showMenu, setShowMenu, showPicker, setShowPicker }) {
   const { user } = useSelector((state) => state.user);
 
   const [show, setShow] = useState(false);
@@ -57,7 +57,14 @@ function SidebarHeader({ showMenu, setShowMenu }) {
         </div>
       </div>
       {/* Create Group */}
-      {show ? <CreateGroup setShow={setShow} /> : null} {/* Profile of user */}
+      {show ? (
+        <CreateGroup
+          setShow={setShow}
+          showPicker={showPicker}
+          setShowPicker={setShowPicker}
+        />
+      ) : null}{" "}
+      {/* Profile of user */}
       {showProfile ? <Profile setShowProfile={setShowProfile} /> : null}
     </>
   );

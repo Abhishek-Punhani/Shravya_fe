@@ -19,9 +19,15 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (values, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${AUTH_ENDPOINT}/register`, {
-        ...values,
-      });
+      const { data } = await axios.post(
+        `${AUTH_ENDPOINT}/register`,
+        {
+          ...values,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.error.message);
@@ -32,9 +38,34 @@ export const loginUser = createAsyncThunk(
   "auth/login",
   async (values, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${AUTH_ENDPOINT}/login`, {
-        ...values,
-      });
+      const { data } = await axios.post(
+        `${AUTH_ENDPOINT}/login`,
+        {
+          ...values,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.error.message);
+    }
+  }
+);
+export const googleLogin = createAsyncThunk(
+  "auth/google",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `${AUTH_ENDPOINT}/google`,
+        {
+          ...values,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       console.log(data);
       return data;
     } catch (error) {
@@ -56,6 +87,7 @@ export const updateUserInfo = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         }
       );
       return data;
@@ -64,7 +96,6 @@ export const updateUserInfo = createAsyncThunk(
     }
   }
 );
-
 export const userSlice = createSlice({
   name: "user",
   initialState: initalState,
@@ -97,6 +128,18 @@ export const userSlice = createSlice({
         state.user = action.payload.user;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(googleLogin.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.status = "suceeded";
+        state.error = "";
+        state.user = action.payload.user;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })

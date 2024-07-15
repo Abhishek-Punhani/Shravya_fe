@@ -11,12 +11,19 @@ function Sidebar({
   setShow,
   showMenu,
   setShowMenu,
+  showPicker,
+  setShowPicker,
 }) {
   const [searchResults, setSearchResults] = useState([]);
   return (
     <div className="flex0030 max-w-[30%] h-full select-none overflow-hidden">
       {/* Sidebar Header */}
-      <SidebarHeader showMenu={showMenu} setShowMenu={setShowMenu} />
+      <SidebarHeader
+        showMenu={showMenu}
+        setShowMenu={setShowMenu}
+        showPicker={showPicker}
+        setShowPicker={setShowPicker}
+      />
       {/* Notifications */}
       <Notifications />
       {/* Searchbar */}

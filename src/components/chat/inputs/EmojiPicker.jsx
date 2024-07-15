@@ -35,7 +35,9 @@ function EmojiPickerApp({
           type="button"
           onClick={(event) => {
             event.stopPropagation();
-            setShowAttachments(false);
+            if (setShowAttachments) {
+              setShowAttachments(false);
+            }
             setShowPicker((prev) => !prev);
           }}
         >
