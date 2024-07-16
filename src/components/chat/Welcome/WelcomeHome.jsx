@@ -3,10 +3,10 @@ import { Logo } from "../../../svg";
 function WelcomeHome() {
   return (
     <>
-      <div className="h-full w-full dark:bg-dark_bg_4 flex flex-col items-center justify-center  select-none border-l dark:border-l-dark_border_2 border-b-[6px] border-b-green_2">
+      <div className="hidden md:flex sm:hidden min-h-full w-full dark:bg-dark_bg_4  flex-col items-center justify-center  select-none border-l dark:border-l-dark_border_2 border-b-[6px] border-b-green_2">
         {/* container */}
         <div className="w-full flex flex-col  gap-y-8 items-center justify-center">
-          <span>
+          <span className="flex items-center justify-center w-full">
             <Logo />
           </span>
           {/* Infos */}

@@ -27,10 +27,10 @@ function Home({ socket }) {
   const [show, setShow] = useState(undefined);
   const [showMenu, setShowMenu] = useState(false);
   // join event for socket io
-  //join user into the socket io
+  // join user into the socket io
   useEffect(() => {
     socket.emit("join", user._id);
-    //get online users
+    // get online users
     socket.on("get-online-users", (users) => {
       setOnlineUsers(users);
     });
@@ -43,8 +43,8 @@ function Home({ socket }) {
 
   // message and typing
   useEffect(() => {
-    //  listening recieved msgs
-    socket.on("message_recieved", async (message) => {
+    //  listening received msgs
+    socket.on("message_received", async (message) => {
       await dispatch(updateMessages(message));
     });
     // Listening typing..
@@ -82,7 +82,7 @@ function Home({ socket }) {
   return (
     <>
       <div
-        className="h-screen dark:bg-dark_bg_1 flex items-center justify-center"
+        className="min-h-screen dark:bg-dark_bg_1 flex items-center justify-center py-[5px]"
         onClick={() => {
           if (show) {
             setShow(false);
@@ -95,9 +95,10 @@ function Home({ socket }) {
           }
         }}
       >
-        {/* container */}
-        <div className="container h-screen flex py-[10px]">
+        {/* Container */}
+        <div className="container min-h-screen h-full flex min-w-full">
           {/* Sidebar */}
+
           <Sidebar
             onlineUsers={onlineUsers}
             typing={typing}
@@ -109,18 +110,20 @@ function Home({ socket }) {
             setShowPicker={setShowPicker}
           />
           {/* Main Chat Component */}
-          {activeConversation && activeConversation?._id ? (
-            <ChatContainer
-              onlineUsers={onlineUsers}
-              typing={typing}
-              showPicker={showPicker}
-              showAttachments={showAttachments}
-              setShowPicker={setShowPicker}
-              setShowAttachments={setShowAttachments}
-            />
-          ) : (
-            <WelcomeHome />
-          )}
+          <div className="flex-1">
+            {activeConversation && activeConversation?._id ? (
+              <ChatContainer
+                onlineUsers={onlineUsers}
+                typing={typing}
+                showPicker={showPicker}
+                showAttachments={showAttachments}
+                setShowPicker={setShowPicker}
+                setShowAttachments={setShowAttachments}
+              />
+            ) : (
+              <WelcomeHome />
+            )}
+          </div>
         </div>
       </div>
       {/* Call */}

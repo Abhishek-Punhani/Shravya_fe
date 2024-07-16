@@ -76,9 +76,9 @@ function Conversation({ convo, socket, online, typing, show, setShow }) {
               <div className="flex items-center gap-x-1 dark:text-dark_text_2">
                 <div className="flex-1 items-center gap-x-1  dark:text-dark_text_2">
                   {typing === convo._id ? (
-                    <p className="font-bold text-green_1">Typing...</p>
+                    <p className="font-bold text-green_1 ">Typing...</p>
                   ) : convo?.latestMessage?.message?.length > 0 ? (
-                    <p>
+                    <p className="flex break-words">
                       {convo.isGroup && (
                         <span className="font-bold">
                           {`${convo?.latestMessage?.sender?.name} :  `}
@@ -91,17 +91,22 @@ function Conversation({ convo, socket, online, typing, show, setShow }) {
                         : convo.latestMessage?.message}
                     </p>
                   ) : (
-                    <p className="font-bold flex items-start">
+                    <p className="font-bold flex items-center text-[14px]">
                       {convo?.latestMessage && (
-                        <span className="flex items-start justify-start mb-3">
+                        <span className="flex items-end justify-center">
                           {isImgVid(convo) ? (
-                            <PhotoIcon size={30} />
+                            <PhotoIcon size={30} className="flex items-end" />
                           ) : (
-                            <DocumentIcon size={30} />
+                            <DocumentIcon
+                              size={30}
+                              className="flex items-end"
+                            />
                           )}
                         </span>
                       )}
-                      {getDocumentName(convo)}
+                      <span className="flex items-end justify-center text-[0.90rem]">
+                        {getDocumentName(convo)}
+                      </span>
                     </p>
                   )}
                 </div>

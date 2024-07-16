@@ -11,7 +11,7 @@ function SidebarHeader({ showMenu, setShowMenu, showPicker, setShowPicker }) {
   const [showProfile, setShowProfile] = useState(false);
   return (
     <>
-      <div className="h-[50px] dark:bg-dark_bg_2 flex items-center p16">
+      <div className="h-[50px] dark:bg-dark_bg_2 flex items-center px-[16px] sidebar">
         {/* container */}
         <div className="w-full flex items-center justify-between">
           {/* user image */}

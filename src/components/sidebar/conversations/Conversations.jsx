@@ -17,7 +17,7 @@ function Conversations({ onlineUsers, typing, show, setShow }) {
             .filter(
               (c) =>
                 c.latestMessage ||
-                c._id === activeConversation._id ||
+                c._id === activeConversation?._id ||
                 c.isGroup === true
             )
             .map((convo) => {

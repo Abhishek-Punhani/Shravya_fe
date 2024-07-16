@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   DialIcon,
   DotsIcon,
+  ReturnIcon,
   SearchLargeIcon,
   VideoDialIcon,
 } from "../../../svg";
@@ -11,7 +12,7 @@ import {
   getConversationPicture,
   getConversationUser,
 } from "../../../utils/chat";
-import { setCall } from "../../../features/chatSlice";
+import { setActiveConversation, setCall } from "../../../features/chatSlice";
 function ChatHeader({ online, setShowChatInfos }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -27,9 +28,13 @@ function ChatHeader({ online, setShowChatInfos }) {
       })
     );
   };
+  const closeConvo = async (e) => {
+    e.stopPropagation();
+    await dispatch(setActiveConversation(undefined));
+  };
   return (
     <>
-      <div className=" relative h-[59px] w-full flex items-center dark:bg-dark_bg_2 select-none p-[16px]">
+      <div className=" relative h-[59px] w-full flex items-center dark:bg-dark_bg_2 select-none p-[16px] mt-1">
         {/* Container */}
         <div className=" w-full flex items-center justify-between">
           {/* Left */}
@@ -37,6 +42,14 @@ function ChatHeader({ online, setShowChatInfos }) {
             className="flex items-center gap-x-4 cursor-pointer w-full"
             onClick={() => setShowChatInfos(true)}
           >
+            {/* Back Button */}
+            <button
+              type="button"
+              className="btn"
+              onClick={(e) => closeConvo(e)}
+            >
+              <ReturnIcon className="fill-dark_svg_1" />
+            </button>
             {/* Conversation Image */}
             <button className="btn">
               <img

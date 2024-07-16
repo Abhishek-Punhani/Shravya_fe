@@ -42,7 +42,7 @@ function ChatContainer({
   return (
     <>
       <div
-        className="relative h-full w-full flex flex-col  select-none border-l dark:border-l-dark_border_2 overflow-hidden"
+        className={`relative min-h-screen w-full flex flex-col  select-none border-l dark:border-l-dark_border_2 overflow-hidden pt-1`}
         onClick={() => {
           setShow(false);
           if (showPicker) {

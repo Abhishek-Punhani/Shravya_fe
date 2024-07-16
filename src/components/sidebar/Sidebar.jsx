@@ -3,6 +3,7 @@ import { SidebarHeader } from "./header";
 import { Notifications } from "./notifications";
 import { SearchResults, Searchbar } from "./searchbar";
 import { Conversations } from "./conversations";
+import { useSelector } from "react-redux";
 
 function Sidebar({
   onlineUsers,
@@ -15,8 +16,13 @@ function Sidebar({
   setShowPicker,
 }) {
   const [searchResults, setSearchResults] = useState([]);
+  const { activeConversation } = useSelector((state) => state.chat);
   return (
-    <div className="flex0030 max-w-[30%] h-full select-none overflow-hidden">
+    <div
+      className={`flex flex-col flex0030 lg:min-w-[30%] min-h-screen max-h-screen select-none overflow-hidden md:min-w-[40%] sm-sidebar ${
+        activeConversation?._id ? "hidde" : ""
+      }`}
+    >
       {/* Sidebar Header */}
       <SidebarHeader
         showMenu={showMenu}
