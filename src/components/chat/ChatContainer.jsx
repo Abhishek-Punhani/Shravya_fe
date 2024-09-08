@@ -42,7 +42,7 @@ function ChatContainer({
   return (
     <>
       <div
-        className={`relative min-h-screen w-full flex flex-col  select-none border-l dark:border-l-dark_border_2 overflow-hidden pt-1`}
+        className={`relative min-h-screen w-full flex flex-col  select-none border-l dark:border-l-dark_border_2 overflow-hidden`}
         onClick={() => {
           setShow(false);
           if (showPicker) {
@@ -63,7 +63,7 @@ function ChatContainer({
               : checkOnline(onlineUsers, user, activeConversation.users)
           }
         />
-        <div className="flex-1">
+        <div className="flex-1 h-full">
           {files.length > 0 ? (
             <>
               {/* Files preview*/}
@@ -75,40 +75,46 @@ function ChatContainer({
             </>
           ) : (
             <>
-              {/* Chat Messages */}
-              <ChatMessages
-                typing={typing}
-                setedt={setedt}
-                setReply={setReply}
-                reply={reply}
-                show={show}
-                setShow={setShow}
-                setForward={setForward}
-              />
-              {/* Chat Inputs */}
-              {edt ? (
-                <EditMsgInput
-                  showPicker={showPicker}
-                  setShowPicker={setShowPicker}
-                  showAttachments={showAttachments}
-                  setShowAttachments={setShowAttachments}
-                  edt={edt}
-                  setedt={setedt}
-                />
-              ) : showAudioRec ? (
-                <AudioRecorder setShowAudioRec={setShowAudioRec} />
-              ) : (
-                <ChatInput
-                  showPicker={showPicker}
-                  setShowPicker={setShowPicker}
-                  showAttachments={showAttachments}
-                  setShowAttachments={setShowAttachments}
-                  setReply={setReply}
-                  reply={reply}
-                  showAudioRec={showAudioRec}
-                  setShowAudioRec={setShowAudioRec}
-                />
-              )}
+              <div className="h-full flex-col">
+                <div className="h-full">
+                  {/* Chat Messages */}
+                  <ChatMessages
+                    typing={typing}
+                    setedt={setedt}
+                    setReply={setReply}
+                    reply={reply}
+                    show={show}
+                    setShow={setShow}
+                    setForward={setForward}
+                  />
+                </div>
+                <div>
+                  {/* Chat Inputs */}
+                  {edt ? (
+                    <EditMsgInput
+                      showPicker={showPicker}
+                      setShowPicker={setShowPicker}
+                      showAttachments={showAttachments}
+                      setShowAttachments={setShowAttachments}
+                      edt={edt}
+                      setedt={setedt}
+                    />
+                  ) : showAudioRec ? (
+                    <AudioRecorder setShowAudioRec={setShowAudioRec} />
+                  ) : (
+                    <ChatInput
+                      showPicker={showPicker}
+                      setShowPicker={setShowPicker}
+                      showAttachments={showAttachments}
+                      setShowAttachments={setShowAttachments}
+                      setReply={setReply}
+                      reply={reply}
+                      showAudioRec={showAudioRec}
+                      setShowAudioRec={setShowAudioRec}
+                    />
+                  )}
+                </div>
+              </div>
             </>
           )}
         </div>

@@ -72,7 +72,7 @@ function ChatInput({
   return (
     <>
       <form
-        className="w-full dark:bg-dark_bg_2 min-h-[50px] flex flex-col items-center absolute bottom-0 py-2 px-4 select-none"
+        className="w-full dark:bg-dark_bg_2 min-h-[60px] flex flex-col items-center absolute bottom-0 py-2 px-4 select-none"
         onSubmit={(e) => {
           onSubmitHandler(e);
         }}
