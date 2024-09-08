@@ -11,7 +11,7 @@ function SidebarHeader({ showMenu, setShowMenu, showPicker, setShowPicker }) {
   const [showProfile, setShowProfile] = useState(false);
   return (
     <>
-      <div className="h-[50px] dark:bg-dark_bg_2 flex items-center px-[16px] sidebar">
+      <div className="min-h-[50px] dark:bg-dark_bg_2 flex items-center px-[16px] sidebar">
         {/* container */}
         <div className="w-full flex items-center justify-between">
           {/* user image */}
@@ -56,16 +56,22 @@ function SidebarHeader({ showMenu, setShowMenu, showPicker, setShowPicker }) {
           </ul>
         </div>
       </div>
-      {/* Create Group */}
-      {show ? (
-        <CreateGroup
-          setShow={setShow}
-          showPicker={showPicker}
-          setShowPicker={setShowPicker}
-        />
-      ) : null}{" "}
-      {/* Profile of user */}
-      {showProfile ? <Profile setShowProfile={setShowProfile} /> : null}
+      <div>
+        {/* Create Group */}
+        {show ? (
+          <CreateGroup
+            setShow={setShow}
+            showPicker={showPicker}
+            setShowPicker={setShowPicker}
+          />
+        ) : null}{" "}
+        {/* Profile of user */}
+        {showProfile ? (
+          <div className="mt-2">
+            <Profile setShowProfile={setShowProfile} />
+          </div>
+        ) : null}
+      </div>
     </>
   );
 }

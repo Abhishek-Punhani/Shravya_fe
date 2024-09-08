@@ -77,7 +77,7 @@ function Profile({ setShowProfile }) {
     setShowProfile(false);
   };
   return (
-    <div className="createGroupAnimation relative flex0030 min-h-full z-40">
+    <div className="createGroupAnimation relative flex0030 profile z-40 mt-4">
       {/* Container */}
       <div className="mt-5 w-full flex items-center justify-between px-4">
         {/* return button */}

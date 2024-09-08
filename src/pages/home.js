@@ -82,7 +82,7 @@ function Home({ socket }) {
   return (
     <>
       <div
-        className="min-h-screen dark:bg-dark_bg_1 flex items-center justify-center py-[5px]"
+        className="min-h-screen dark:bg-dark_bg_1 flex items-center justify-center "
         onClick={() => {
           if (show) {
             setShow(false);

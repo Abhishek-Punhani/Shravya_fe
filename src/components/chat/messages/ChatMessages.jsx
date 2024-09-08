@@ -30,9 +30,9 @@ function ChatMessages({
   };
 
   return (
-    <div className=" bg-[url('https://res.cloudinary.com/dmhcnhtng/image/upload/v1677358270/Untitled-1_copy_rpx8yb.jpg')] bg-cover bg-no-repeat min-h-full">
+    <div className=" bg-[url('https://res.cloudinary.com/dmhcnhtng/image/upload/v1677358270/Untitled-1_copy_rpx8yb.jpg')] bg-cover bg-no-repeat ">
       {/* Conatiner */}
-      <div className="scrollbar overflow_scrollbar overflow-auto py-2 px-[4%] ">
+      <div className="scrollbar overflow_scrollbar1 overflow-auto py-2 px-[4%] ">
         {messages &&
           messages.map((message, i) => (
             <Message

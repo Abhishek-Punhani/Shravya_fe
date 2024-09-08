@@ -34,7 +34,7 @@ function ChatHeader({ online, setShowChatInfos }) {
   };
   return (
     <>
-      <div className=" relative h-[59px] w-full flex items-center dark:bg-dark_bg_2 select-none p-[16px] mt-1">
+      <div className=" relative h-[59px] w-full flex items-center dark:bg-dark_bg_2 select-none p-[16px] ">
         {/* Container */}
         <div className=" w-full flex items-center justify-between">
           {/* Left */}

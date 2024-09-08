@@ -42,6 +42,16 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+  .overflow_scrollbar1 {
+    height: calc(100vh - 130px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .profile {
+    min-height: calc(100vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   .online {
     border: 2px solid #00a884;
   }
