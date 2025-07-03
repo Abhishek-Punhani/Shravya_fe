@@ -140,7 +140,7 @@ export default function RegisterForm() {
         <p className="flex flex-col items-center justify-center text-center mt-10 text-md dark:text-dark_text_1">
           <span>Already have an account?</span>
           <Link
-            to="/register"
+            to="/login"
             className="hover:underline cursor-pointer transition ease-in duration-300"
           >
             SignIn
@@ -152,6 +152,7 @@ export default function RegisterForm() {
             <GoogleLogin
               onSuccess={(credentialResponse) => {
                 let decode = jwtDecode(credentialResponse.credential);
+                console.log(decode);
                 let user = {
                   name: decode.name,
                   email: decode.email,

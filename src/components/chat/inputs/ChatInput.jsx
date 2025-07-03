@@ -164,7 +164,7 @@ function ChatInput({
             </button>
           ) : null}
           {/* send icon */}
-          <button className="btn" type="submit">
+          <button className="btn" type="submit" disabled={loading}>
             {status === "loading" && loading ? (
               <ClipLoader />
             ) : (

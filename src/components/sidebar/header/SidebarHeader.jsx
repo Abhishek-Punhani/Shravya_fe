@@ -20,9 +20,13 @@ function SidebarHeader({ showMenu, setShowMenu, showPicker, setShowPicker }) {
             onClick={() => setShowProfile(true)}
           >
             <img
-              src={user.picture}
+              src={user.picture ? user.picture : "/default.svg"}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/default.svg";
+              }}
               alt={user.name}
-              className="w-full h-full rounded-full object-cover"
+              className="w-full h-full flex items-center justify-center rounded-full object-cover"
             />
           </button>
           {/* User icons */}

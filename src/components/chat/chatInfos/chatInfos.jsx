@@ -32,7 +32,7 @@ function ChatInfos({ setShowChatInfos, convo, online }) {
   });
 
   return (
-    <div className="absolute top-0 right-0 h-full w-full flex flex-col select-none border-l bg-dark_bg_2 dark:border-l-dark_border_2  z-[1000] scrollbar">
+    <div className="absolute top-0 right-0 h-full w-full flex flex-col select-none border-l bg-dark_bg_2 dark:border-l-dark_border_2  z-[1000] scrollbar py-5">
       {/* Container */}
       <div className="w-full flex flex-col items-start px-4">
         {/* return button and convo name and picture */}
