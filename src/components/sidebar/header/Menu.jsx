@@ -1,7 +1,11 @@
-import { useDispatch } from "react-redux";
 import { logout } from "../../../features/userSlice";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useDispatch } from "react-redux";
+
 function Menu({ setShow, setShowMenu }) {
   const dispatch = useDispatch();
+  const { toggleTheme, theme } = useTheme();
+  const darkMode = theme === "dark";
   return (
     <>
       <div
@@ -26,6 +30,12 @@ function Menu({ setShow, setShowMenu }) {
           </li>
           <li className="py-3 pl-5 cursor-pointer hover:dark:bg-dark_bg_3">
             <span> Settings</span>
+          </li>
+          <li
+            className="py-3 pl-5 cursor-pointer hover:dark:bg-dark_bg_3"
+            onClick={() => toggleTheme()}
+          >
+            <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
           </li>
           <li
             className="py-3 pl-5 cursor-pointer hover:dark:bg-dark_bg_3"

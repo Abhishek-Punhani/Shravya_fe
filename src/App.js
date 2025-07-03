@@ -11,12 +11,14 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import { useSelector } from "react-redux";
 import SocketContext from "./contexts/SocketContext";
+import { useTheme } from "./contexts/ThemeContext";
 function App() {
   const { user } = useSelector((state) => state.user);
   const { token } = user;
   const socket = io(process.env.REACT_APP_AUTH_ENDPOINT);
+  const {theme}=useTheme();
   return (
-    <div className="dark">
+    <div className={theme}>
       <SocketContext.Provider value={socket}>
         <Router>
           <Routes>
