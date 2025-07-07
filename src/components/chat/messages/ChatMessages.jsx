@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Message from "./Message";
 import { useSelector } from "react-redux";
@@ -17,12 +17,36 @@ function ChatMessages({
   const { user } = useSelector((state) => state.user);
   const { messages, activeConversation } = useSelector((state) => state.chat);
   const endRef = useRef(null);
+  const [displayMessages, setDisplayMessages] = useState(messages);
+
+  // Merge sent plaintext messages from localStorage (immutably)
+  useEffect(() => {
+    if (!activeConversation?._id) return;
+    const localKey = `sentMsgs_${activeConversation._id}_${user._id}`;
+    let sentMsgs = JSON.parse(localStorage.getItem(localKey) || '[]');
+    if (sentMsgs.length > 0) {
+      // Create a new array with merged messages
+      const newMessages = messages.map(m => {
+        if (m.sender._id === user._id) {
+          const sent = sentMsgs.find(s => s._id === m._id);
+          if (sent && m.message !== sent.message) {
+            return { ...m, message: sent.message };
+          }
+        }
+        return m;
+      });
+      setDisplayMessages(newMessages);
+    } else {
+      setDisplayMessages(messages);
+    }
+  }, [activeConversation, messages, user]);
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       scrollToBottom();
     }, 300); // Adding a slight delay
     return () => clearTimeout(timeoutId);
-  }, [messages, typing, reply]);
+  }, [displayMessages, typing, reply]);
   const scrollToBottom = () => {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" });
@@ -30,30 +54,22 @@ function ChatMessages({
   };
 
   return (
-    <div className=" bg-[url('https://res.cloudinary.com/dmhcnhtng/image/upload/v1677358270/Untitled-1_copy_rpx8yb.jpg')] bg-cover bg-no-repeat ">
-      {/* Conatiner */}
-      <div className="scrollbar overflow_scrollbar1 overflow-auto py-2 px-[4%] ">
-        {messages &&
-          messages.map((message, i) => (
-            <Message
-              message={message}
-              key={message._id}
-              i={i}
-              me={user._id === message.sender._id}
-              setedt={setedt}
-              setReply={setReply}
-              setDelMsg={setDelMsg}
-              show={show}
-              setShow={setShow}
-              setForward={setForward}
-            />
-          ))}
-        {typing === activeConversation._id ? <Typing /> : null}
-        <div
-          className={`mt-1 h-[0.01px] bg-none bottom-0 ${reply && "mt-9 h-5"}`}
-          ref={endRef}
-        ></div>
-      </div>
+    <div className="flex-1 overflow-y-auto scrollbar px-4 py-2">
+      {displayMessages.map((msg, idx) => (
+        <Message
+          key={msg._id || idx}
+          message={msg}
+          me={msg.sender._id === user._id}
+          setedt={setedt}
+          setReply={setReply}
+          setShow={setShow}
+          show={show}
+          setDelMsg={setDelMsg}
+          setForward={setForward}
+        />
+      ))}
+      {typing && <Typing />}
+      <div ref={endRef} />
     </div>
   );
 }

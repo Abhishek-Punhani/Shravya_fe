@@ -7,22 +7,55 @@ import {
 } from "../../../utils/chat";
 import { dateHandler } from "../../../utils/date";
 import { create_open_conversation } from "../../../features/chatSlice";
+import * as cryptoUtils from '../../../utils/crypto';
 
 function ChatInfos({ setShowChatInfos, convo, online }) {
   const { user } = useSelector((state) => state.user);
   const { token } = user;
+  const { conversations } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
 
   const openConvo = async (convoUser) => {
     if (convoUser._id === user._id) {
       return;
     }
+    // Check if conversation already exists
+    const existingConvo = conversations.find(
+      c =>
+        c.users.length === 2 &&
+        c.users.some(u => u._id === user._id) &&
+        c.users.some(u => u._id === convoUser._id)
+    );
+    if (existingConvo) {
+      dispatch({ type: 'chat/setActiveConversation', payload: existingConvo });
+      // No socket here, but you can add if needed
+      setShowChatInfos(false);
+      return;
+    }
+    // 1. Generate DH and RSA key pairs
+    const dhKeyPair = await cryptoUtils.generateDHKeyPair();
+    const rsaKeyPair = await cryptoUtils.generateRSAKeyPair();
+    // 2. Export public keys
+    const dhPublicJwk = await cryptoUtils.exportDHPublicKey(dhKeyPair.publicKey);
+    const rsaPublicJwk = await cryptoUtils.exportRSAPublicKey(rsaKeyPair.publicKey);
+    // 3. Export private keys (for later use)
+    const dhPrivateJwk = await window.crypto.subtle.exportKey('jwk', dhKeyPair.privateKey);
+    const rsaPrivateJwk = await cryptoUtils.exportRSAPrivateKey(rsaKeyPair.privateKey);
+    // 4. Store private keys temporarily in memory (or session/local storage if needed)
+    sessionStorage.setItem('dhPrivateKey', JSON.stringify(dhPrivateJwk));
+    sessionStorage.setItem('rsaPrivateKey', JSON.stringify(rsaPrivateJwk));
+    // 5. Prepare values for conversation creation
     const values = {
       token,
       reciever_id: convoUser._id, // Changed to convoUser._id
       isGroup: false,
     };
-    await dispatch(create_open_conversation(values));
+    let valuesWithKeys = {
+      ...values,
+      dhPublicKey: JSON.stringify(dhPublicJwk),
+      rsaPublicKey: JSON.stringify(rsaPublicJwk)
+    };
+    await dispatch(create_open_conversation(valuesWithKeys));
     setShowChatInfos(false);
   };
 

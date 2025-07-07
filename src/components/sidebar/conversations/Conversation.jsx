@@ -5,17 +5,18 @@ import {
   getConversationName,
   getConversationPicture,
 } from "../../../utils/chat";
-import { create_open_conversation } from "../../../features/chatSlice";
+import { create_open_conversation, uploadEncryptedPrivateKey } from "../../../features/chatSlice";
 import { capitalize } from "../../../utils/string";
 import SocketContext from "../../../contexts/SocketContext";
 import { DocumentIcon, PhotoIcon } from "../../../svg";
 import { getDocumentName, isImgVid } from "../../../utils/lastDocumentName";
 import ConvoContextMenu from "./ConvoContextMenu";
+import * as cryptoUtils from '../../../utils/crypto';
 
 function Conversation({ convo, socket, online, typing, show, setShow }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { activeConversation } = useSelector((state) => state.chat);
+  const { activeConversation, conversations } = useSelector((state) => state.chat);
   const { token } = user;
   const values = {
     reciever_id: convo.isGroup ? "" : getConversationId(user, convo.users),
@@ -23,8 +24,78 @@ function Conversation({ convo, socket, online, typing, show, setShow }) {
     token: token,
   };
   const openConversation = async () => {
-    let newConvo = await dispatch(create_open_conversation(values));
+    // Check if conversation already exists
+    const isGroup = convo.isGroup;
+    let existingConvo;
+    if (isGroup) {
+      existingConvo = conversations.find(c => c._id === convo._id);
+    } else {
+      // For 1-1, check if both users are present
+      existingConvo = conversations.find(
+        c =>
+          c.users.length === 2 &&
+          c.users.some(u => u._id === user._id) &&
+          c.users.some(u => u._id === values.reciever_id)
+      );
+    }
+    if (existingConvo) {
+      dispatch({ type: 'chat/setActiveConversation', payload: existingConvo });
+      socket.emit("join_conversation", existingConvo._id);
+      return;
+    }
+    // 1. Generate DH and RSA key pairs
+    const dhKeyPair = await cryptoUtils.generateDHKeyPair();
+    const rsaKeyPair = await cryptoUtils.generateRSAKeyPair();
+    // 2. Export public keys
+    const dhPublicJwk = await cryptoUtils.exportDHPublicKey(dhKeyPair.publicKey);
+    const rsaPublicJwk = await cryptoUtils.exportRSAPublicKey(rsaKeyPair.publicKey);
+    // 3. Export private keys (for later use)
+    const dhPrivateJwk = await window.crypto.subtle.exportKey('jwk', dhKeyPair.privateKey);
+    const rsaPrivateJwk = await cryptoUtils.exportRSAPrivateKey(rsaKeyPair.privateKey);
+    // 4. Store private keys using the new key management utility
+    // Note: We'll store with a temporary ID until we get the actual conversation ID
+    const tempKey = `temp_${values.reciever_id}`;
+    cryptoUtils.storeKeys(tempKey, dhPrivateJwk, rsaPrivateJwk);
+    console.log('🔐 Stored keys with temp ID:', tempKey);
+    // 5. Prepare values for conversation creation
+    let valuesWithKeys = {
+      ...values,
+      dhPublicKey: JSON.stringify(dhPublicJwk),
+      rsaPublicKey: JSON.stringify(rsaPublicJwk)
+    };
+    let newConvo = await dispatch(create_open_conversation(valuesWithKeys));
     socket.emit("join_conversation", newConvo.payload._id);
+
+    // --- E2EE: Upload encrypted RSA private key after DH exchange ---
+    // Wait for both users' DH public keys to be present
+    const conversation = newConvo.payload;
+    if (conversation && conversation.keys && conversation.keys.length === 2) {
+      // Find peer's DH public key
+      const myId = user._id;
+      const myKeyEntry = conversation.keys.find(k => k.userId === myId);
+      const peerKeyEntry = conversation.keys.find(k => k.userId !== myId);
+      if (myKeyEntry && peerKeyEntry && !myKeyEntry.encryptedRsaPrivateKey) {
+        // Import keys
+        const dhPrivateKey = await cryptoUtils.importDHPrivateKey(dhPrivateJwk); // correct: import user's DH private key
+        const peerDhPublicJwk = JSON.parse(peerKeyEntry.dhPublicKey);
+        const peerDhPublicKey = await cryptoUtils.importDHPublicKey(peerDhPublicJwk);
+        // Derive shared secret
+        const aesKey = await cryptoUtils.deriveSharedSecret(dhPrivateKey, peerDhPublicKey);
+        // Encrypt RSA private key
+        const rsaPrivateKeyStr = JSON.stringify(rsaPrivateJwk);
+        const { ciphertext, iv } = await cryptoUtils.encryptWithAESGCM(aesKey, rsaPrivateKeyStr);
+        // Convert to base64
+        const encryptedRsaPrivateKey = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
+        const ivB64 = btoa(String.fromCharCode(...new Uint8Array(iv)));
+        // Upload to backend
+        await dispatch(uploadEncryptedPrivateKey({
+          token,
+          conversationId: conversation._id,
+          encryptedRsaPrivateKey,
+          iv: ivB64
+        }));
+      }
+    }
   };
   return (
     <li
@@ -124,7 +195,7 @@ function Conversation({ convo, socket, online, typing, show, setShow }) {
         </div>
         {/* context menu */}
         {show === convo._id && (
-          <ConvoContextMenu setShow={setShow} show={show} />
+          <ConvoContextMenu setShow={setShow} show={show} convo={convo} />
         )}
       </div>
       {/* Border */}

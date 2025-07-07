@@ -4,6 +4,7 @@ import {
   deleteMessage,
 } from "../../../features/chatSlice";
 import SocketContext from "../../../contexts/SocketContext";
+import * as cryptoUtils from '../../../utils/crypto';
 
 export function ContextMenu({
   contextMenuDirection,
@@ -19,17 +20,48 @@ export function ContextMenu({
 }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { activeConversation, messages } = useSelector((state) => state.chat);
+  const { activeConversation, messages, conversations } = useSelector((state) => state.chat);
   const { token } = user;
 
   const handlePrivateReply = async () => {
     if (activeConversation.isGroup && !me) {
+      // Check if conversation already exists
+      const existingConvo = conversations.find(
+        c =>
+          c.users.length === 2 &&
+          c.users.some(u => u._id === user._id) &&
+          c.users.some(u => u._id === message.sender._id)
+      );
+      if (existingConvo) {
+        dispatch({ type: 'chat/setActiveConversation', payload: existingConvo });
+        socket.emit("join_conversation", existingConvo._id);
+        setReply(message);
+        return;
+      }
+      // 1. Generate DH and RSA key pairs
+      const dhKeyPair = await cryptoUtils.generateDHKeyPair();
+      const rsaKeyPair = await cryptoUtils.generateRSAKeyPair();
+      // 2. Export public keys
+      const dhPublicJwk = await cryptoUtils.exportDHPublicKey(dhKeyPair.publicKey);
+      const rsaPublicJwk = await cryptoUtils.exportRSAPublicKey(rsaKeyPair.publicKey);
+      // 3. Export private keys (for later use)
+      const dhPrivateJwk = await window.crypto.subtle.exportKey('jwk', dhKeyPair.privateKey);
+      const rsaPrivateJwk = await cryptoUtils.exportRSAPrivateKey(rsaKeyPair.privateKey);
+      // 4. Store private keys temporarily in memory (or session/local storage if needed)
+      sessionStorage.setItem('dhPrivateKey', JSON.stringify(dhPrivateJwk));
+      sessionStorage.setItem('rsaPrivateKey', JSON.stringify(rsaPrivateJwk));
+      // 5. Prepare values for conversation creation
       const values = {
         token,
         reciever_id: message.sender._id,
         isGroup: false,
       };
-      await dispatch(create_open_conversation(values));
+      let valuesWithKeys = {
+        ...values,
+        dhPublicKey: JSON.stringify(dhPublicJwk),
+        rsaPublicKey: JSON.stringify(rsaPublicJwk)
+      };
+      await dispatch(create_open_conversation(valuesWithKeys));
       setReply(message);
     }
   };

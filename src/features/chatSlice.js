@@ -40,10 +40,10 @@ export const create_open_conversation = createAsyncThunk(
   "conversation/open_create",
   async (values, { rejectWithValue }) => {
     try {
-      const { token, reciever_id, isGroup } = values;
+      const { token, ...rest } = values;
       const { data } = await axios.post(
         CONVERSATION_ENDPOINT,
-        { reciever_id, isGroup },
+        { ...rest },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +51,6 @@ export const create_open_conversation = createAsyncThunk(
           withCredentials: true,
         }
       );
-
       return data;
     } catch (error) {
       console.log(error);
@@ -209,12 +208,67 @@ export const deleteConversation = createAsyncThunk(
   }
 );
 
+export const addParticipantKeys = createAsyncThunk(
+  "conversation/addParticipantKeys",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { token, conversationId, dhPublicKey, rsaPublicKey } = values;
+      const { data } = await axios.post(
+        `${CONVERSATION_ENDPOINT}/add-keys`,
+        { conversationId, dhPublicKey, rsaPublicKey },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.error || 'Key upload failed');
+    }
+  }
+);
+
+export const uploadEncryptedPrivateKey = createAsyncThunk(
+  "conversation/uploadEncryptedPrivateKey",
+  async (values, { rejectWithValue }) => {
+    try {
+      const { token, conversationId, encryptedRsaPrivateKey, iv } = values;
+      const { data } = await axios.post(
+        `${CONVERSATION_ENDPOINT}/upload-encrypted-private-key`,
+        { conversationId, encryptedRsaPrivateKey, iv },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.error || 'Encrypted key upload failed');
+    }
+  }
+);
+
 export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
     setActiveConversation: (state, action) => {
       state.activeConversation = action.payload;
+    },
+    addConversation: (state, action) => {
+      // Only add if not already present
+      const exists = state.conversations.some(c => c._id === action.payload._id);
+      if (!exists) {
+        state.conversations.unshift(action.payload);
+      }
+      // Optionally set as active
+      // state.activeConversation = action.payload;
     },
     updateMessages: (state, action) => {
       // update msg if reciever is online
@@ -456,5 +510,6 @@ export const {
   updateEditedMessage,
   updateDeleteMessages,
   updateFileMessage,
+  addConversation,
 } = chatSlice.actions;
 export default chatSlice.reducer;

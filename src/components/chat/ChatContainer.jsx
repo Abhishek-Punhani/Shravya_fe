@@ -2,13 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import ChatHeader from "./header/ChatHeader";
 import ChatMessages from "./messages/ChatMessages";
 import { useEffect, useState } from "react";
-import { getCoversationMessages } from "../../features/chatSlice";
+import { getCoversationMessages, uploadEncryptedPrivateKey } from "../../features/chatSlice";
 import { ChatInput, EditMsgInput } from "./inputs";
 import { checkOnline } from "../../utils/chat";
 import FilesPreview from "./inputs/attachments/filesPreview/filesPreview";
 import ForwardMessage from "./forward Message/ForwardMessage";
 import AudioRecorder from "./inputs/AudioRecorder";
 import ChatInfos from "./chatInfos/chatInfos";
+import * as cryptoUtils from '../../utils/crypto';
 
 function ChatContainer({
   onlineUsers,
@@ -32,6 +33,37 @@ function ChatContainer({
       dispatch(getCoversationMessages(values));
     }
   }, [activeConversation]);
+
+  // --- E2EE: Upload encrypted RSA private key if needed ---
+  useEffect(() => {
+    if (!activeConversation || !activeConversation.keys || activeConversation.keys.length !== 2) return;
+    const myId = user._id;
+    const myKeyEntry = activeConversation.keys.find(k => k.userId === myId);
+    const peerKeyEntry = activeConversation.keys.find(k => k.userId !== myId);
+    if (!myKeyEntry || !peerKeyEntry || myKeyEntry.encryptedRsaPrivateKey) return;
+    // Try to get private keys from sessionStorage
+    const dhPrivateJwkStr = sessionStorage.getItem('dhPrivateKey');
+    const rsaPrivateJwkStr = sessionStorage.getItem('rsaPrivateKey');
+    if (!dhPrivateJwkStr || !rsaPrivateJwkStr) return;
+    (async () => {
+      const dhPrivateJwk = JSON.parse(dhPrivateJwkStr);
+      const rsaPrivateJwk = JSON.parse(rsaPrivateJwkStr);
+      const dhPrivateKey = await cryptoUtils.importDHPrivateKey(dhPrivateJwk);
+      const peerDhPublicJwk = JSON.parse(peerKeyEntry.dhPublicKey);
+      const peerDhPublicKey = await cryptoUtils.importDHPublicKey(peerDhPublicJwk);
+      const aesKey = await cryptoUtils.deriveSharedSecret(dhPrivateKey, peerDhPublicKey);
+      const rsaPrivateKeyStr = JSON.stringify(rsaPrivateJwk);
+      const { ciphertext, iv } = await cryptoUtils.encryptWithAESGCM(aesKey, rsaPrivateKeyStr);
+      const encryptedRsaPrivateKey = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
+      const ivB64 = btoa(String.fromCharCode(...new Uint8Array(iv)));
+      await dispatch(uploadEncryptedPrivateKey({
+        token,
+        conversationId: activeConversation._id,
+        encryptedRsaPrivateKey,
+        iv: ivB64
+      }));
+    })();
+  }, [activeConversation, user, dispatch, token]);
 
   const [edt, setedt] = useState(undefined);
   const [reply, setReply] = useState(undefined);
