@@ -1,39 +1,75 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CallActions from "./CallActions";
 import Header from "./Header";
 import Ringing from "./Ringing";
 import CallInfos from "./callInfos";
 import { useDispatch, useSelector } from "react-redux";
+import Peer from "simple-peer";
 import SocketContext from "../../../contexts/SocketContext";
-import {
-  endCall,
-  getZegoToken,
-  setCall,
-  setIncomingCall,
-} from "../../../features/chatSlice";
-import { ZegoExpressEngine } from "zego-express-engine-webrtc";
+import { endCall, setCall, setIncomingCall } from "../../../features/chatSlice";
 import { getConversationPicture } from "../../../utils/chat";
 
 function Call({ socket, totalSecInCall, setTotalSecInCall }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const { token } = user;
-  const [showActions, SetShowActions] = useState(false);
   const { call, incomingCall, activeConversation } = useSelector(
     (state) => state.chat
   );
-  const [callToken, setCallToken] = useState(undefined);
-  const [zgVar, setZgVar] = useState(undefined);
-  const [localStream, setLocalStream] = useState(undefined);
-  const [publishStream, setPublishStream] = useState(undefined);
+
+  const [stream, setStream] = useState();
+  const [showActions, SetShowActions] = useState(false);
+  const [callerSignal, setCallerSignal] = useState();
+
+  const myVideo = useRef();
+  const userVideo = useRef();
+  const connectionRef = useRef();
+
+  // If there is an incomingCall, track its signal
+  useEffect(() => {
+    setCallerSignal(incomingCall?.signal);
+  }, [incomingCall]);
+
+  // Get local stream
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((localStream) => {
+        setStream(localStream);
+        if (myVideo.current) {
+          myVideo.current.srcObject = localStream;
+        }
+      });
+  }, []);
+
+  // If the local stream or call changes, update myVideo
+  useEffect(() => {
+    if (myVideo.current && stream) {
+      myVideo.current.srcObject = stream;
+    }
+  }, [stream, call]);
+
+  // Leave Call
   const leaveCall = async () => {
     setTotalSecInCall(0);
-    if (call) {
-      if (zgVar && localStream && publishStream) {
-        zgVar.destroyStream(localStream);
-        zgVar.stopPublishingStream(publishStream);
-        zgVar.logoutRoom(call.roomId.toString());
+
+    // Stop local stream tracks so camera/audio stops
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+
+    // Destroy the peer connection safely
+    if (connectionRef.current) {
+      if (typeof connectionRef.current.removeAllListeners === "function") {
+        connectionRef.current.removeAllListeners();
       }
+      try {
+        connectionRef.current.destroy();
+      } catch (e) {
+        // Ignore errors from double destroy
+      }
+      connectionRef.current = null;
+    }
+    if (call) {
       socket.emit("reject-call", call._id);
     } else if (incomingCall) {
       socket.emit("reject-call", incomingCall._id);
@@ -41,6 +77,8 @@ function Call({ socket, totalSecInCall, setTotalSecInCall }) {
 
     await dispatch(endCall());
   };
+
+  // Answer Call
   const answerCall = async () => {
     await dispatch(
       setCall({
@@ -49,108 +87,86 @@ function Call({ socket, totalSecInCall, setTotalSecInCall }) {
         accepted: true,
       })
     );
-    socket.emit("accept-incoming-call", incomingCall._id);
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
+    });
+
+    // Send our signal back to the caller
+    peer.on("signal", (data) => {
+      socket.emit("accept-incoming-call", incomingCall._id, data);
+    });
+
+    // When we receive the remote stream, attach it to userVideo
+    peer.on("stream", (remoteStream) => {
+      if (userVideo.current) {
+        userVideo.current.srcObject = remoteStream;
+      }
+    });
+
+    // Accept the caller's signal
+    if (callerSignal) {
+      peer.signal(callerSignal);
+    }
+    connectionRef.current = peer;
+
+    // Clear the incomingCall from Redux
     await dispatch(setIncomingCall(undefined));
   };
+
+  // Out-going call logic
   useEffect(() => {
-    const fetchToken = async () => {
-      if (call?.accepted === true) {
-        let zegoToken = await dispatch(getZegoToken(token));
-        console.log(zegoToken);
-        setCallToken(zegoToken.payload.token);
-      }
-    };
-    fetchToken();
-    console.log(callToken);
-  }, [call?.accepted]);
-  useEffect(() => {
-    const startCall = async () => {
-      const zg = new ZegoExpressEngine(
-        parseInt(process.env.REACT_APP_ZEGO_APP_ID),
-        process.env.REACT_APP_ZEGO_SERVER_ID.toString()
-      );
-      setZgVar(zg);
-      zg.on(
-        "roomStreamUpdate",
-        async (roomId, updateType, streamList, extendedData) => {
-          if (updateType === "ADD") {
-            const vd = document.getElementById("userVideo");
-            vd.id = streamList[0].streamID;
-            vd.muted = false;
-            zg.startPlayingStream(streamList[0].streamID, {
-              video: call.callType === "video",
-              audio: true,
-            }).then((stream) => (vd.srcObject = stream));
-          } else if (
-            updateType === "DELETE" &&
-            zg &&
-            localStream &&
-            streamList[0].streamID
-          ) {
-            zg.destroyStream(localStream);
-            zg.stopPublishingStream(streamList[0].streamID);
-            zg.logoutRoom(call.roomId.toString());
-            dispatch(endCall());
-          }
-        }
-      );
-      await zg.loginRoom(
-        call.roomId.toString(),
-        callToken.toString(),
-        { userID: user._id, userName: user.name },
-        { userUpdate: true }
-      );
-      const localStream = await zg.createStream({
-        camera: {
-          audio: true,
-          video: call.callType === "video",
-        },
-      });
-      const localVideo = document.getElementById("myVideo");
-      localVideo.srcObject = localStream;
-      localVideo.muted = false;
-      const streamID = "123" + Date.now();
-      setPublishStream(streamID);
-      setLocalStream(localStream);
-      zg.startPublishingStream(streamID, localStream);
-    };
-    if (callToken) {
-      console.log(
-        callToken,
-        process.env.REACT_APP_ZEGO_APP_ID,
-        process.env.REACT_APP_ZEGO_SERVER_ID
-      );
-      startCall();
-    }
-  }, [callToken]);
-  useEffect(() => {
-    socket.on("call-accepted", () => {
-      dispatch(
-        setCall({
-          ...call,
-          accepted: true,
-        })
-      );
-    });
-    if (call && call?.type.toString() === "out-going" && !call?.accepted) {
+    if (call && call.type === "out-going") {
       setTotalSecInCall(0);
-      socket.emit("outgoing-call", {
-        to: call._id,
-        from: {
-          _id: user._id,
-          name: user.name,
-          picture: user.picture,
-        },
-        callType: call.callType,
-        roomId: call.roomId,
+
+      const peer = new Peer({
+        initiator: true,
+        trickle: false,
+        stream: stream,
       });
+
+      // Send our signal to the callee
+      peer.on("signal", (data) => {
+        socket.emit("outgoing-call", {
+          to: call._id,
+          from: {
+            _id: user._id,
+            name: user.name,
+            picture: user.picture,
+          },
+          callType: call.callType,
+          signal: data,
+        });
+      });
+
+      // When we receive the remote stream, attach it to userVideo
+      peer.on("stream", (remoteStream) => {
+        if (userVideo.current) {
+          userVideo.current.srcObject = remoteStream;
+        }
+      });
+
+      // When the callee accepts, signal back
+      socket.on("call-accepted", (signal) => {
+        dispatch(
+          setCall({
+            ...call,
+            accepted: true,
+          })
+        );
+        peer.signal(signal);
+      });
+
+      connectionRef.current = peer;
     }
-  }, []);
+  }, [call, dispatch, socket, stream, user, setTotalSecInCall]);
+
   return (
     <>
       {call && (
         <div
-          className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[450px] h-[550px] rounded-2xl overflow-hidden callbg`}
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[450px] h-[550px] rounded-2xl overflow-hidden callbg"
           onMouseOver={() => SetShowActions(true)}
           onMouseOut={() => SetShowActions(false)}
         >
@@ -168,11 +184,11 @@ function Call({ socket, totalSecInCall, setTotalSecInCall }) {
             {showActions && <CallActions leaveCall={leaveCall} />}
             {/* Video Streams */}
             <div>
-              {/* User Video */}
+              {/* Remote / userVideo */}
               {call.accepted && (
                 <div>
                   <video
-                    id="userVideo"
+                    ref={userVideo}
                     playsInline
                     autoPlay
                     className="largeVideoCall"
@@ -180,27 +196,18 @@ function Call({ socket, totalSecInCall, setTotalSecInCall }) {
                 </div>
               )}
               {/* My Video */}
-
               <div className="flex items-center justify-center h-full">
-                {call?.accepted ? (
-                  <video
-                    id="myVideo"
-                    playsInline
-                    autoPlay
-                    className={`${
-                      call.accepted
-                        ? `SmallVideoCall
-                 ${showActions && "moveVideoCall"}`
-                        : "largeVideoCall"
-                    }`}
-                  ></video>
-                ) : (
-                  <img
-                    src={getConversationPicture(user, activeConversation.users)}
-                    alt=""
-                    className=" h-[200px] w-[200px] flex justify-center items-center rounded-full mt-[30%]"
-                  />
-                )}
+                <video
+                  ref={myVideo}
+                  muted
+                  playsInline
+                  autoPlay
+                  className={`${
+                    call.accepted
+                      ? `SmallVideoCall ${showActions && "moveVideoCall"}`
+                      : "largeVideoCall"
+                  }`}
+                ></video>
               </div>
             </div>
           </div>
@@ -212,16 +219,18 @@ function Call({ socket, totalSecInCall, setTotalSecInCall }) {
         <audio src="/audio/ringing.mp3" autoPlay loop></audio>
       )}
 
-      {/* Ringing  */}
-      {incomingCall?._id && (
+      {/* Incoming Ringing */}
+      {incomingCall?._id && !call?.accepted && (
         <Ringing leaveCall={leaveCall} answerCall={answerCall} />
       )}
     </>
   );
 }
+
 const CallWithSocket = (props) => (
   <SocketContext.Consumer>
     {(socket) => <Call {...props} socket={socket} />}
   </SocketContext.Consumer>
 );
+
 export default CallWithSocket;

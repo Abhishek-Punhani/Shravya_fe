@@ -143,26 +143,7 @@ export const createGroupConvo = createAsyncThunk(
     }
   }
 );
-export const getZegoToken = createAsyncThunk(
-  "getZegoToken",
-  async (token, { rejectWithValue }) => {
-    try {
-      const { data } = await axios.get(
-        `${CONVERSATION_ENDPOINT}/get_zego_token`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      return data;
-    } catch (error) {
-      console.log(error);
-      return rejectWithValue(error.response.data.error.message);
-    }
-  }
-);
 
 export const editMessage = createAsyncThunk(
   "editMessage",

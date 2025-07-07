@@ -63,12 +63,12 @@ function Home({ socket }) {
 
   // call
   useEffect(() => {
-    socket.on("incoming-call", ({ from, roomId, callType }) => {
+    socket.on("incoming-call", ({ from, callType, signal }) => {
       dispatch(
         setIncomingCall({
           ...from,
-          roomId,
           callType,
+          signal,
         })
       );
     });
